@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore.api.datagen;
+package games.moegirl.sinocraft.sinocore.api.data.gen;
 
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;

@@ -3,6 +3,7 @@ package games.moegirl.sinocraft.sinocore.api.registation;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Food {
     int nutrition() default Integer.MIN_VALUE;
