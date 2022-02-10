@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore.api.datagen;
+package games.moegirl.sinocraft.sinocore.api.data.gen;
 
 import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;

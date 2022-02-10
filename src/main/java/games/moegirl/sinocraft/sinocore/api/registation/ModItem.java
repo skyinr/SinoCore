@@ -5,6 +5,7 @@ import net.minecraft.world.item.Rarity;
 
 import java.lang.annotation.*;
 
+@Deprecated
 @Retention(RetentionPolicy.RUNTIME)
 @Repeatable(Items.class)
 @Target({ElementType.FIELD, ElementType.TYPE})
