@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen;
 
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -9,10 +10,8 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,8 +36,8 @@ public class DefaultItemModelProvider extends ItemModelProvider {
      */
     @Override
     protected void registerModels() {
-        Set<Item> items = ForgeRegistries.ITEMS.getValues().stream()
-                .filter(i -> modID.equals(ForgeRegistries.ITEMS.getRegistryName().getNamespace()))//filter item in mod
+        Set<Item> items = Registry.ITEM.stream()
+                .filter(i -> modID.equals(Registry.ITEM.getKey(i).getNamespace()))//filter item in mod
                 .collect(Collectors.toSet());
 
         registerItemBlock(items.stream().filter(i -> i instanceof BlockItem).map(i -> (BlockItem) i).collect(Collectors.toSet()));
@@ -51,7 +50,8 @@ public class DefaultItemModelProvider extends ItemModelProvider {
      * @param itemBlocks item block
      */
     private void registerItemBlock(@NotNull Set<BlockItem> itemBlocks) {
-        itemBlocks.forEach(i -> withExistingParent(name(i), prefix("block/" + name(i))));
+        itemBlocks.forEach(i ->
+                withExistingParent(name(i), prefix("block/" + name(i))));
     }
 
     /**
@@ -97,7 +97,7 @@ public class DefaultItemModelProvider extends ItemModelProvider {
      * @return item name
      */
     private static String name(Item i) {
-        return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(i)).getPath();
+        return Registry.ITEM.getKey(i).getPath();
     }
 
     private void registerItem(Set<Item> items) {
