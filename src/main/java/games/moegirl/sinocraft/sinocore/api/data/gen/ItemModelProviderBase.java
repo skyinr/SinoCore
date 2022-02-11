@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen;
 
+import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
@@ -12,7 +13,6 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.ForgeRegistries;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,7 +99,7 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
      * @return item name
      */
     private static String name(Item item) {
-        return Objects.requireNonNull(ForgeRegistries.ITEMS.getKey(item)).getPath();
+        return ForgeRegistries.ITEMS.getKey(item).getPath();
     }
 
     private void registerItem(Set<Item> items) {
