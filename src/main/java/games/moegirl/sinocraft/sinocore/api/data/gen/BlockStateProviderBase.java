@@ -9,18 +9,23 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DefaultBlockStateProvider extends BlockStateProvider {
+/**
+ * BlockStateProviderBase
+ *
+ * @author skyinr
+ */
+public class BlockStateProviderBase extends BlockStateProvider {
     private final String modID;
-    public DefaultBlockStateProvider(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper) {
+    public BlockStateProviderBase(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper) {
         super(generator, modId, existingFileHelper);
         this.modID = modId;
     }
 
     @Override
     protected void registerStatesAndModels() {
-        // register models and state for blocks
+        // skyinr: Register models and state for blocks
         Set<Block> blocks = Registry.BLOCK.stream()
-                .filter(b -> modID.equals(Registry.BLOCK.getKey(b).getNamespace()))//filter block in mod
+                .filter(b -> modID.equals(Registry.BLOCK.getKey(b).getNamespace()))// skyinr: Filter block in mod
                 .collect(Collectors.toSet());
 
         registerBlock(blocks);
