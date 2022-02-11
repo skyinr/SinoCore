@@ -131,10 +131,13 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
         if (Files.isRegularFile(path)) {
             unit = helper.buildAST(path);
         } else {
+            Files.createDirectories(path.getParent());
+            Files.createFile(path);
+
             String packageName = classPath.substring(0, classPath.lastIndexOf("."));
             unit = new CompilationUnit(packageName);
             unit.setStorage(path);
-            helper.writeTo(path, false, unit);
+            unit.getStorage().orElseThrow(IOException::new).save();
         }
 
         String className = unit.getPrimaryTypeName().orElseThrow(IOException::new);
