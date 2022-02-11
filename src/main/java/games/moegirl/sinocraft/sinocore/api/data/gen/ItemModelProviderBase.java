@@ -98,7 +98,7 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
      * @param item item
      * @return item name
      */
-    private static String name(Item item) {
+    private static String name(Item item) { // Todo: qyl: Avoid direct use string Path, use ResourceLocation instead.
         return ForgeRegistries.ITEMS.getKey(item).getPath();
     }
 
