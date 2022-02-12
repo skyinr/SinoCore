@@ -6,6 +6,10 @@ buildscript {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org/'
         }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        maven { url 'https://jitpack.io' }
         mavenCentral()
     }
     dependencies {
@@ -13,6 +17,7 @@ buildscript {
         // classpath group: 'org.parchmentmc', name: 'librarian', version: '1.+'
         // classpath 'net.minecraftforge.gradle:ForgeGradle:5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
+        classpath "io.github.luiqn2007.gradle_plugins:UselessGradlePlugin:1.1.8.1"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -20,9 +25,10 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'   // Parchment mappings.
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "io.github.luiqn2007.gradle_plugins.build_tasks"
 
 version = '1.18.1-1.0.0'
-group = 'games.moegirl.sinocraft' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+group = 'games.moegirl.sinocraft.sinocore' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sinocore'
 
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
@@ -130,6 +136,8 @@ repositories {
     // flatDir {
     //     dir 'libs'
     // }
+
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -149,6 +157,8 @@ dependencies {
     // For more info...
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    compileOnly 'com.github.luiqn2007:UselessPluginLib:1.1.0'
 }
 
 // Example for how to get properties into the manifest for reading at runtime.
@@ -183,4 +193,8 @@ publishing {
             url "file://${project.projectDir}/mcmodsrepo"
         }
     }
+}
+
+sourceTasks {
+    packageName = "games.moegirl.sinocraft.sinocore_gen"
 }
