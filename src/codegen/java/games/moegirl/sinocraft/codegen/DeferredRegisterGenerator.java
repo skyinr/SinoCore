@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore_gen;
+package games.moegirl.sinocraft.codegen;
 
 import com.github.javaparser_new.StaticJavaParser;
 import com.github.javaparser_new.ast.CompilationUnit;
@@ -36,6 +36,8 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
     @Nullable
     private final String elementHolderClassPath;
 
+    private Path srcPath = null;
+
     public DeferredRegisterGenerator(String elementTypeName, String elementTypeClass,
                                      String registerClassPath, String elementHolderClassPath,
                                      String forgeRegistryName) {
@@ -58,8 +60,8 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
 
     @Override
     public void begin(PluginContext context, PluginHelper helper) throws Exception {
-        Path registerPath = helper.srcPath().resolve(registerClassPath.replace(".", "/") + ".java");
-        registerUnit = getOrCreateUnit(registerPath, registerClassPath, helper);
+        Path registerPath = srcPath(helper).resolve(registerClassPath.replace(".", "/") + ".java");
+        registerUnit = getOrCreateUnit(registerPath, registerClassPath);
         registerDeclaration = registerUnit.getPrimaryType()
                 .map(TypeDeclaration::asClassOrInterfaceDeclaration)
                 .orElseThrow(RuntimeException::new);
@@ -90,8 +92,8 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
         registerUnit.getStorage().orElseThrow(IOException::new).save();
 
         if (elementHolderClassPath != null) {
-            Path elementPath = helper.srcPath().resolve(elementHolderClassPath.replace(".", "/") + ".java");
-            elementUnit = getOrCreateUnit(elementPath, elementHolderClassPath, helper);
+            Path elementPath = srcPath(helper).resolve(elementHolderClassPath.replace(".", "/") + ".java");
+            elementUnit = getOrCreateUnit(elementPath, elementHolderClassPath);
             elementDeclaration = elementUnit.getPrimaryType()
                     .map(TypeDeclaration::asClassOrInterfaceDeclaration)
                     .orElseThrow(RuntimeException::new);
@@ -126,10 +128,10 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
         return EnumLoopResult.FINISHED;
     }
 
-    private CompilationUnit getOrCreateUnit(Path path, String classPath, PluginHelper helper) throws IOException {
+    private CompilationUnit getOrCreateUnit(Path path, String classPath) throws IOException {
         CompilationUnit unit;
         if (Files.isRegularFile(path)) {
-            unit = helper.buildAST(path);
+            unit = StaticJavaParser.parse(path);
         } else {
             Files.createDirectories(path.getParent());
             Files.createFile(path);
@@ -173,6 +175,13 @@ public abstract class DeferredRegisterGenerator implements ISourcePlugin {
     protected abstract Expression buildRegisterInitializer(Path file, String className, String elementName, PluginHelper helper);
 
     protected abstract void addElement(Path file, PluginHelper helper, ElementAdder adder) throws Exception;
+
+    protected Path srcPath(PluginHelper helper) {
+        if (srcPath == null) {
+            srcPath = helper.projectPath().resolve("/src/main/java/");
+        }
+        return srcPath;
+    }
 
     public interface ElementAdder {
         void add(String className, String elementName, String classPath);

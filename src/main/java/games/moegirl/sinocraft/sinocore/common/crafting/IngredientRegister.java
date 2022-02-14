@@ -1,7 +1,7 @@
 package games.moegirl.sinocraft.sinocore.common.crafting;
 
 import games.moegirl.sinocraft.sinocore.SinoCore;
-import games.moegirl.sinocraft.sinocore.impl.Crafting;
+import games.moegirl.sinocraft.sinocore.api.impl.Crafting;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 

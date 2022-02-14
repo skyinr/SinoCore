@@ -1,6 +1,6 @@
 @ParametersAreNonnullByDefault
 @MethodsReturnNonnullByDefault
-package games.moegirl.sinocraft.sinocore.impl;
+package games.moegirl.sinocraft.sinocore.api.impl;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 

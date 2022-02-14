@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredient;
 import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredientSerializer;
 import games.moegirl.sinocraft.sinocore.common.util.TagHelper;
-import net.minecraft.core.Registry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;

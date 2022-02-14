@@ -3,7 +3,7 @@ package games.moegirl.sinocraft.sinocore.common.crafting;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import games.moegirl.sinocraft.sinocore.api.crafting.ICraftPredicateSerializer;
-import games.moegirl.sinocraft.sinocore.impl.Crafting;
+import games.moegirl.sinocraft.sinocore.api.impl.Crafting;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Ingredient;

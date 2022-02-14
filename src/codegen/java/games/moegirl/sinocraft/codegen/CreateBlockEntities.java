@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore_gen;
+package games.moegirl.sinocraft.codegen;
 
 import com.github.javaparser_new.StaticJavaParser;
 import com.github.javaparser_new.ast.expr.Expression;
@@ -43,7 +43,7 @@ public class CreateBlockEntities extends DeferredRegisterGenerator {
             String elementName = className.substring(11);
             String classPath = PACKAGE_NAME + "." + className;
 
-            Path blockFile = helper.srcPath().resolve(BLOCK_PATH).resolve("Block" + elementName + ".java");
+            Path blockFile = srcPath(helper).resolve(BLOCK_PATH).resolve("Block" + elementName + ".java");
             if (Files.isRegularFile(blockFile)) {
                 adder.add(className, elementName, classPath);
             } else {
@@ -55,6 +55,6 @@ public class CreateBlockEntities extends DeferredRegisterGenerator {
 
     @Override
     public Path getLoopRoot(PluginHelper helper) {
-        return helper.srcPath().resolve(PACKAGE_NAME.replace(".", "/"));
+        return srcPath(helper).resolve(PACKAGE_NAME.replace(".", "/"));
     }
 }

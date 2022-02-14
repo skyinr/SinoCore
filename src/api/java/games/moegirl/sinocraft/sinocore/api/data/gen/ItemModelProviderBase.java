@@ -1,6 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen;
 
-import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;

@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore_gen;
+package games.moegirl.sinocraft.codegen;
 
 import com.github.javaparser_new.StaticJavaParser;
 import com.github.javaparser_new.ast.CompilationUnit;
@@ -26,13 +26,17 @@ public class CreateCapability implements ISourcePlugin {
 
     private final Map<String, String> capNames = new HashMap<>();
 
+    private Path srcPath = null;
+
     @Override
     public void begin(PluginContext context, PluginHelper helper) throws Exception {
-        Path capabilityPath = helper.srcPath()
+
+
+        Path capabilityPath = srcPath(helper)
                 .resolve(CAPABILITY_PKG.replace(".", "/"))
                 .resolve("ModCapabilities.java");
         if (Files.isRegularFile(capabilityPath)) {
-            unit = helper.buildAST(capabilityPath);
+            unit = StaticJavaParser.parse(capabilityPath);
         } else {
             unit = new CompilationUnit(CAPABILITY_PKG);
             unit.setStorage(capabilityPath);
@@ -86,6 +90,13 @@ public class CreateCapability implements ISourcePlugin {
 
     @Override
     public Path getLoopRoot(PluginHelper helper) {
-        return helper.srcPath().resolve(CAPABILITY_PKG.replace(".", "/"));
+        return srcPath(helper).resolve(CAPABILITY_PKG.replace(".", "/"));
+    }
+
+    private Path srcPath(PluginHelper helper) {
+        if (srcPath == null) {
+            srcPath = helper.projectPath().resolve("/src/main/java/");
+        }
+        return srcPath;
     }
 }
