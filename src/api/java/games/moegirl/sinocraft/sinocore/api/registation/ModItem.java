@@ -1,6 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.registation;
 
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Rarity;
 
 import java.lang.annotation.*;

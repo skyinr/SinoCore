@@ -1,6 +1,9 @@
-package games.moegirl.sinocraft.sinocore.impl;
+package games.moegirl.sinocraft.sinocore.api.impl;
 
-import games.moegirl.sinocraft.sinocore.api.crafting.*;
+import games.moegirl.sinocraft.sinocore.api.crafting.ICraftPredicateSerializer;
+import games.moegirl.sinocraft.sinocore.api.crafting.ICrafting;
+import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredient;
+import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredientSerializer;
 import games.moegirl.sinocraft.sinocore.common.crafting.CountPredicateSerializer;
 import games.moegirl.sinocraft.sinocore.common.crafting.FluidIngredient;
 import games.moegirl.sinocraft.sinocore.common.crafting.FluidIngredientSerializer;

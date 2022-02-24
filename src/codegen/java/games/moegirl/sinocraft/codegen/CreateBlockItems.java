@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore_gen;
+package games.moegirl.sinocraft.codegen;
 
 import com.github.javaparser_new.StaticJavaParser;
 import com.github.javaparser_new.ast.expr.Expression;
@@ -46,6 +46,6 @@ public class CreateBlockItems extends DeferredRegisterGenerator {
 
     @Override
     public Path getLoopRoot(PluginHelper helper) {
-        return helper.srcPath().resolve(PACKAGE_NAME.replace(".", "/"));
+        return srcPath(helper).resolve(PACKAGE_NAME.replace(".", "/"));
     }
 }
