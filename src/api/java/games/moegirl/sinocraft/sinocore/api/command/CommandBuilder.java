@@ -204,7 +204,7 @@ public class CommandBuilder {
     }
 
     @FunctionalInterface
-    interface Command2 extends Command<CommandSourceStack> {
+    public interface Command2 extends Command<CommandSourceStack> {
 
         void execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException;
 
