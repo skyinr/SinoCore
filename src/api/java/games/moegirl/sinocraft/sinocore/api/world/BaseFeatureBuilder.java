@@ -95,6 +95,51 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
     }
 
     /**
+     * Create a {@link ConfiguredFeature} and register it.
+     *
+     * @param name default name of configured feature
+     * @return a registered configured feature
+     */
+    public ConfiguredFeature<C, ?> configured(String name) {
+        if (!isConfiguredRegistered) {
+            FeatureUtils.register(name, configured());
+            isConfiguredRegistered = true;
+        }
+        return configured;
+    }
+
+    /**
+     * Create a {@link ConfiguredFeature} and register it.
+     *
+     * @param modid mod id
+     * @param name  name
+     * @return a registered configured feature
+     */
+    public ConfiguredFeature<C, ?> configured(String modid, String name) {
+        return configured(modid + ":" + name);
+    }
+
+    /**
+     * Create a {@link ConfiguredFeature} and register it.
+     *
+     * @param id name
+     * @return a registered configured feature
+     */
+    public ConfiguredFeature<C, ?> configured(ResourceLocation id) {
+        return configured(id.toString());
+    }
+
+    /**
+     * Create a {@link ConfiguredFeature} and register it.
+     *
+     * @param buildFor get name from it
+     * @return a registered configured feature
+     */
+    public ConfiguredFeature<C, ?> configured(RegistryObject<?> buildFor) {
+        return configured(buildFor.getId());
+    }
+
+    /**
      * Create {@link PlacedFeature} from the builder.
      * <p>Note: Not assure that the configured feature or placed feature is registered in {@link PlacementUtils}.</p>
      *
