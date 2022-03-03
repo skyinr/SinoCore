@@ -9,7 +9,9 @@ import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
@@ -24,8 +26,11 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
     public static final ResourceLocation GENERATED = new ResourceLocation("item/generated");
     public static final ResourceLocation HANDHELD = new ResourceLocation("item/handheld");
 
-    public ItemModelProviderBase(DataGenerator generator, String modId, ExistingFileHelper exHelper) {
+    private final DeferredRegister<? extends Item> deferredRegister;
+
+    public ItemModelProviderBase(DataGenerator generator, String modId, ExistingFileHelper exHelper, DeferredRegister<? extends Item> deferredRegister) {
         super(generator, modId, exHelper);
+        this.deferredRegister = deferredRegister;
         // qyl: We need not an additional modId variable. MC already have.
     }
 
@@ -34,15 +39,25 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
      */
     @Override
     protected void registerModels() {
-        Set<Item> items = ForgeRegistries.ITEMS.getValues().stream()
-                .filter(i -> modid.equals(ForgeRegistries.ITEMS.getRegistryName().getNamespace()))  // skyinr: Item in mod filter.
-                .collect(Collectors.toSet());
+        Set<Item> items = getItems();
 
         registerItemBlock(items.stream()
                 .filter(i -> i instanceof BlockItem)
                 .map(i -> (BlockItem) i)
                 .collect(Collectors.toSet()));
         registerItem(items);
+    }
+
+    protected Set<Item> getItems() {
+        return deferredRegister.getEntries().stream().map(RegistryObject::get).collect(Collectors.toSet());
+    }
+
+    /**
+     * @param items Set of items.
+     * @return Builders.
+     */
+    protected Set<Item> skipItems(Set<Item> items) {
+        return items;
     }
 
     /**

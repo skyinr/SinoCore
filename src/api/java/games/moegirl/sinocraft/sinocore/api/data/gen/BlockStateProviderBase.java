@@ -5,6 +5,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,24 +17,31 @@ import java.util.stream.Collectors;
  * @author skyinr
  */
 public class BlockStateProviderBase extends BlockStateProvider {
-    private final String modID;
-    public BlockStateProviderBase(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper) {
+    private final DeferredRegister<? extends Block> deferredRegister;
+    public BlockStateProviderBase(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper, DeferredRegister<? extends Block> deferredRegister) {
         super(generator, modId, existingFileHelper);
-        this.modID = modId;
+        this.deferredRegister = deferredRegister;
     }
 
     @Override
     protected void registerStatesAndModels() {
-        // skyinr: Register models and state for blocks
-        Set<Block> blocks = Registry.BLOCK.stream()
-                .filter(b -> modID.equals(Registry.BLOCK.getKey(b).getNamespace()))// skyinr: Filter block in mod
-                .collect(Collectors.toSet());
+        Set<Block> blocks = getBlocks();
+        blocks = skipBlock(blocks);
 
         registerBlock(blocks);
     }
 
-    private void registerBlock(Set<Block> blocks) {
+    protected Set<Block> getBlocks() {
+        // skyinr: Register models and state for blocks
+        return deferredRegister.getEntries().stream().map(RegistryObject::get).collect(Collectors.toSet());
+    }
+
+    protected void registerBlock(Set<Block> blocks) {
         blocks.forEach(this::simpleBlock);
+    }
+
+    protected Set<Block> skipBlock(Set<Block> blocks) {
+        return blocks;
     }
 
 }
