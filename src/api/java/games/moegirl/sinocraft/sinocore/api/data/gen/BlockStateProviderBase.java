@@ -1,11 +1,16 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen;
 
-import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
+import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
+import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,24 +20,57 @@ import java.util.stream.Collectors;
  * @author skyinr
  */
 public class BlockStateProviderBase extends BlockStateProvider {
-    private final String modID;
-    public BlockStateProviderBase(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper) {
+    private final DeferredRegister<? extends Block> deferredRegister;
+    private boolean adding = true;
+    private final Set<Block> skipBlocks = new HashSet<>();
+
+    public BlockStateProviderBase(DataGenerator generator, String modId, ExistingFileHelper existingFileHelper, DeferredRegister<? extends Block> deferredRegister) {
         super(generator, modId, existingFileHelper);
-        this.modID = modId;
+        this.deferredRegister = deferredRegister;
     }
 
     @Override
     protected void registerStatesAndModels() {
-        // skyinr: Register models and state for blocks
-        Set<Block> blocks = Registry.BLOCK.stream()
-                .filter(b -> modID.equals(Registry.BLOCK.getKey(b).getNamespace()))// skyinr: Filter block in mod
-                .collect(Collectors.toSet());
+        Set<Block> blocks = getBlocks();
+        blocks.removeAll(skipBlocks);
 
         registerBlock(blocks);
     }
 
-    private void registerBlock(Set<Block> blocks) {
+    protected Set<Block> getBlocks() {
+        // skyinr: Register models and state for blocks
+        return deferredRegister.getEntries().stream().map(RegistryObject::get).collect(Collectors.toSet());
+    }
+
+    protected void registerBlock(Set<Block> blocks) {
         blocks.forEach(this::simpleBlock);
     }
 
+    protected void skipBlock(Block... blocks) {
+        skipBlocks.addAll(Arrays.asList(blocks));
+    }
+
+    @Override
+    public VariantBlockStateBuilder getVariantBuilder(Block b) {
+        if (isAdding()) {
+            skipBlock(b);
+        }
+        return super.getVariantBuilder(b);
+    }
+
+    @Override
+    public MultiPartBlockStateBuilder getMultipartBuilder(Block b) {
+        if (isAdding()) {
+            skipBlock(b);
+        }
+        return super.getMultipartBuilder(b);
+    }
+
+    public boolean isAdding() {
+        return adding;
+    }
+
+    public void setAdding(boolean adding) {
+        this.adding = adding;
+    }
 }
