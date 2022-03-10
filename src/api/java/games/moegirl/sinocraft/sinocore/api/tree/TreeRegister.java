@@ -201,9 +201,9 @@ public class TreeRegister {
      * Add loot table to data provider, call in {@link LootTableProvider#getTables()}
      *
      * @param consumer consumer to build
-     * @param skip     all tree block loot
+     * @return all tree loot tables
      */
-    public Set<TreeBlockLoot> addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer, Consumer<Block> skip) {
+    public Set<TreeBlockLoot> addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer) {
         Set<TreeBlockLoot> set = new HashSet<>();
         forEach(tree -> set.add(tree.getRegister().addLoots(consumer)));
         return set;
