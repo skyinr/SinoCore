@@ -1,5 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen.loot.block;
 
+import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
+import games.moegirl.sinocraft.sinocore.api.util.BlockLootables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.loot.BlockLoot;
@@ -10,6 +12,7 @@ import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 
 import javax.annotation.Nonnull;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -63,6 +66,10 @@ public class BlockLootTableBase extends BlockLoot {
         Collections.addAll(toSkip, blocks);
     }
 
+    protected void skip(Collection<Block> blocks) {
+        toSkip.addAll(blocks);
+    }
+
     /**
      * Should this block be skipped?
      *
@@ -84,13 +91,16 @@ public class BlockLootTableBase extends BlockLoot {
             if (skipBlock(block)) {
                 continue;
             }
+            if (block instanceof ILootableBlock block1) {
+                add(block, block1.createLootBuilder(BlockLootables.INSTANCE));
+                continue;
+            }
             add(block, LootTable.lootTable().withPool(applyExplosionDecay(block, LootPool.lootPool()
                             .name("main")
                             .setRolls(ConstantValue.exactly(1))
                             .add(LootItem.lootTableItem(block))
                     ))
             );
-
         }
     }
 
