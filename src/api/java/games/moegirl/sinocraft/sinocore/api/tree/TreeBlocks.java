@@ -5,6 +5,9 @@ import net.minecraft.world.level.block.*;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -32,6 +35,8 @@ public class TreeBlocks {
     public final RegistryObject<FenceGateBlock> fenceGate;
     public final RegistryObject<FenceBlock> fence;
     public final RegistryObject<DoorBlock> door;
+
+    private final Set<Block> allBlocks = new HashSet<>();
 
     public Block planks() {
         return planks.get();
@@ -105,28 +110,40 @@ public class TreeBlocks {
         return door.get();
     }
 
+    public Set<Block> allBlocks() {
+        return Set.copyOf(allBlocks);
+    }
+
     TreeBlocks(Tree tree, DeferredRegister<Block> register) {
         this.tree = tree;
 
         TreeProperties properties = tree.getProperties();
-        planks = register(register, "planks", Suppliers.curry(properties.planks, tree));
-        sapling = register(register, "sapling", Suppliers.curry(properties.sapling, tree));
-        log = register(register, "log", Suppliers.curry(properties.log, tree));
-        strippedLog = register(register, "stripped", "log", Suppliers.curry(properties.strippedLog, tree));
-        wood = register(register, "wood", Suppliers.curry(properties.wood, tree));
-        strippedWoods = register(register, "stripped", "wood", Suppliers.curry(properties.strippedWoods, tree));
-        leaves = register(register, "leaves", Suppliers.curry(properties.leaves, tree));
-        sign = register(register, "sign", Suppliers.curry(properties.sign, tree));
-        wallSign = register(register, "wall_sign", Suppliers.curry(properties.wallSign, tree));
-        pressurePlate = register(register, "pressure_plate", Suppliers.curry(properties.pressurePlate, tree));
-        trapdoor = register(register, "trapdoor", Suppliers.curry(properties.trapdoor, tree));
-        stairs = register(register, "stairs", Suppliers.curry(properties.stairs, tree));
-        pottedSapling = register(register, "potted", "sapling", Suppliers.curry(properties.pottedSapling, tree));
-        button = register(register, "button", Suppliers.curry(properties.button, tree));
-        slab = register(register, "slab", Suppliers.curry(properties.slab, tree));
-        fenceGate = register(register, "fence_gate", Suppliers.curry(properties.fenceGate, tree));
-        fence = register(register, "fence", Suppliers.curry(properties.fence, tree));
-        door = register(register, "door", Suppliers.curry(properties.door, tree));
+        planks = register(register, "planks", asSupplier(properties.planks));
+        sapling = register(register, "sapling", asSupplier(properties.sapling));
+        log = register(register, "log", asSupplier(properties.log));
+        strippedLog = register(register, "stripped", "log", asSupplier(properties.strippedLog));
+        wood = register(register, "wood", asSupplier(properties.wood));
+        strippedWoods = register(register, "stripped", "wood", asSupplier(properties.strippedWoods));
+        leaves = register(register, "leaves", asSupplier(properties.leaves));
+        sign = register(register, "sign", asSupplier(properties.sign));
+        wallSign = register(register, "wall_sign", asSupplier(properties.wallSign));
+        pressurePlate = register(register, "pressure_plate", asSupplier(properties.pressurePlate));
+        trapdoor = register(register, "trapdoor", asSupplier(properties.trapdoor));
+        stairs = register(register, "stairs", asSupplier(properties.stairs));
+        pottedSapling = register(register, "potted", "sapling", asSupplier(properties.pottedSapling));
+        button = register(register, "button", asSupplier(properties.button));
+        slab = register(register, "slab", asSupplier(properties.slab));
+        fenceGate = register(register, "fence_gate", asSupplier(properties.fenceGate));
+        fence = register(register, "fence", asSupplier(properties.fence));
+        door = register(register, "door", asSupplier(properties.door));
+    }
+
+    private <T extends Block> Supplier<T> asSupplier(Function<Tree, T> factory) {
+        return () -> {
+            T block = factory.apply(tree);
+            allBlocks.add(block);
+            return block;
+        };
     }
 
     private <T extends Block> RegistryObject<T> register(DeferredRegister<Block> register, String prefix, String postfix, Supplier<T> supplier) {
