@@ -52,7 +52,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -509,11 +508,11 @@ public record TreeRegisterHelper(Tree tree) {
      * call this method in {@link LootTableProvider#getTables()} or other equivalent method.
      *
      * @param consumer consumer to collect table builder
-     * @return added blocks
+     * @return block loot for add tree
      */
-    public Set<Block> addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer) {
+    public TreeBlockLoot addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer) {
         TreeBlockLoot loot = new TreeBlockLoot(tree.getBlocks());
         consumer.accept(Pair.of(() -> loot, LootContextParamSets.BLOCK));
-        return Set.copyOf(loot.knownBlocks());
+        return loot;
     }
 }
