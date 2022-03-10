@@ -3,6 +3,9 @@ package games.moegirl.sinocraft.sinocore.api;
 import games.moegirl.sinocraft.sinocore.api.crafting.ICrafting;
 import games.moegirl.sinocraft.sinocore.api.mixin.IMixins;
 import games.moegirl.sinocraft.sinocore.api.tree.Trees;
+import net.minecraftforge.fml.ModLoadingContext;
+
+import java.util.function.Consumer;
 
 /**
  * SinoCore Public API
@@ -13,6 +16,7 @@ public class SinoCoreAPI {
 
     private static ICrafting crafting;
     private static IMixins mixin;
+    private static boolean isInitialized = false;
 
     static {
         String property = System.getProperty("sun.java.command");
@@ -46,5 +50,27 @@ public class SinoCoreAPI {
      */
     public static Trees getTrees() {
         return Trees.INSTANCE;
+    }
+
+    public static void _loadCoreApi(Consumer<ApiLoader> consumer) {
+        if (!isInitialized && "sinocore".equals(ModLoadingContext.get().getActiveNamespace())) {
+            consumer.accept(new ApiLoaderImpl());
+            isInitialized = true;
+        } else {
+            throw new RuntimeException("DON'T reset SinoCore API!!!");
+        }
+    }
+
+    private static class ApiLoaderImpl implements ApiLoader {
+
+        @Override
+        public void setCrafting(ICrafting api) {
+            crafting = api;
+        }
+
+        @Override
+        public void setMixins(IMixins api) {
+            mixin = api;
+        }
     }
 }

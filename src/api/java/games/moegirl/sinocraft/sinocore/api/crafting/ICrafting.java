@@ -14,8 +14,6 @@ import java.util.Optional;
  */
 public interface ICrafting {
 
-    String IMPL = "games.moegirl.sinocraft.sinocore.impl.Craft";
-
     /**
      * Create a PredicateIngredient, this ingredient adds {@link ICraftPredicateSerializer.Predicate} to another
      * ingredient used to filter result.
