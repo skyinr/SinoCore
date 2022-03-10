@@ -3,6 +3,8 @@ package games.moegirl.sinocraft.sinocore.api;
 import games.moegirl.sinocraft.sinocore.api.crafting.ICrafting;
 import games.moegirl.sinocraft.sinocore.api.mixin.IMixins;
 import games.moegirl.sinocraft.sinocore.api.tree.Trees;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * SinoCore Public API
@@ -11,6 +13,7 @@ public class SinoCoreAPI {
 
     public static final boolean DEBUG_MODE;
 
+    public static final Logger LOGGER = LogManager.getLogger();
     private static ICrafting crafting;
     private static IMixins mixin;
 

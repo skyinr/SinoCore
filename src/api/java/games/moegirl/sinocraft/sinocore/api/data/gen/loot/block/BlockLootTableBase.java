@@ -1,10 +1,12 @@
 package games.moegirl.sinocraft.sinocore.api.data.gen.loot.block;
 
+import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
 import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
 import games.moegirl.sinocraft.sinocore.api.util.BlockLootables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.Registry;
 import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -92,6 +94,9 @@ public class BlockLootTableBase extends BlockLoot {
                 continue;
             }
             if (block instanceof ILootableBlock block1) {
+                if (block.getLootTable().equals(new ResourceLocation(block.getRegistryName().getNamespace(), "blocks/" + block.getRegistryName().getPath()))) {
+                    SinoCoreAPI.LOGGER.atWarn().log("Do not use BlockBehaviour.Properties#lootFrom when ILootableBlock is implemented");
+                }
                 add(block, block1.createLootBuilder(BlockLootables.INSTANCE));
                 continue;
             }
