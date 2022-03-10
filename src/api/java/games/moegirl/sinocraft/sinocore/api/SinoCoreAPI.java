@@ -4,6 +4,8 @@ import games.moegirl.sinocraft.sinocore.api.crafting.ICrafting;
 import games.moegirl.sinocraft.sinocore.api.mixin.IMixins;
 import games.moegirl.sinocraft.sinocore.api.tree.Trees;
 import net.minecraftforge.fml.ModLoadingContext;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.function.Consumer;
 
@@ -14,6 +16,7 @@ public class SinoCoreAPI {
 
     public static final boolean DEBUG_MODE;
 
+    public static final Logger LOGGER = LogManager.getLogger();
     private static ICrafting crafting;
     private static IMixins mixin;
     private static boolean isInitialized = false;
