@@ -106,7 +106,7 @@ public record TreeRegisterHelper(Tree tree) {
      * <p>You can invoke this in {@link FMLCommonSetupEvent}</p>
      */
     public void registerBlockFamily() {
-        for (Method method : BlockFamilies.class.getMethods()) {
+        for (Method method : BlockFamilies.class.getDeclaredMethods()) {
             if (Modifier.isStatic(method.getModifiers())
                     && method.getReturnType() == BlockFamily.Builder.class
                     && method.getParameterCount() == 1
