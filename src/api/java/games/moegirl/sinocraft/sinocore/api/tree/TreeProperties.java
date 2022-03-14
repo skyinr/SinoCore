@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.level.material.MaterialColor;
 
+import javax.annotation.Nullable;
 import java.util.function.Function;
 
 public class TreeProperties {
@@ -21,6 +22,10 @@ public class TreeProperties {
     public final MaterialColor woodColor, strippedWoodColor;
     public final WoodType type;
     public final boolean hasStick;
+    public final boolean hasChest;
+    public final boolean hasCustomSignEntity;
+    public final boolean hasCustomWallSignEntity;
+    public final boolean hasCustomChestEntity;
 
     final Function<Tree, Block> planks;
     final Function<Tree, SaplingBlock> sapling;
@@ -40,6 +45,8 @@ public class TreeProperties {
     final Function<Tree, FenceGateBlock> fenceGate;
     final Function<Tree, FenceBlock> fence;
     final Function<Tree, DoorBlock> door;
+    @Nullable
+    final Function<Tree, ChestBlock> chest;
 
     public TreeProperties(Tree tree, TreeBuilder builder) {
         this.tree = tree;
@@ -56,6 +63,10 @@ public class TreeProperties {
         this.strippedWoodColor = builder.strippedWoodColor;
         this.grower = builder.grower;
         this.hasStick = builder.hasStick;
+        this.hasChest = builder.hasChest;
+        this.hasCustomSignEntity = builder.customSignEntity;
+        this.hasCustomWallSignEntity = builder.customWallSignEntity;
+        this.hasCustomChestEntity = builder.customChestEntity;
 
         this.planks = builder.planks;
         this.sapling = builder.sapling;
@@ -75,6 +86,7 @@ public class TreeProperties {
         this.fenceGate = builder.fenceGate;
         this.fence = builder.fence;
         this.door = builder.door;
+        this.chest = builder.hasChest ? builder.chest : null;
     }
 
     public ResourceLocation name() {
@@ -89,4 +101,19 @@ public class TreeProperties {
         return hasStick;
     }
 
+    public boolean hasChest() {
+        return hasChest;
+    }
+
+    public boolean hasCustomChestEntity() {
+        return hasCustomChestEntity;
+    }
+
+    public boolean hasCustomSignEntity() {
+        return hasCustomSignEntity;
+    }
+
+    public boolean hasCustomWallSignEntity() {
+        return hasCustomWallSignEntity;
+    }
 }

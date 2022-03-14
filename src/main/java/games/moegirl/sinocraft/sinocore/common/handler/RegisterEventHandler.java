@@ -35,7 +35,6 @@ public class RegisterEventHandler {
             String classPath = "games.moegirl.sinocraft.sinocore.api.capability." + className;
             Class<?> aClass = RegisterEventHandler.class.getClassLoader().loadClass(classPath);
             event.register(aClass);
-            System.out.println("Register " + aClass);
         } catch (Exception ignored) {
         }
     }

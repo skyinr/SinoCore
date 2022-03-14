@@ -44,6 +44,9 @@ public class TreeBlockLoot extends BlockLoot {
         addDrop(blocks.fenceGate(), BlockLoot::createSingleItemTable);
         addDrop(blocks.fence(), BlockLoot::createSingleItemTable);
         addDrop(blocks.door(), BlockLoot::createDoorTable);
+        if (blocks.hasChest()) {
+            addDrop(blocks.chest(), BlockLoot::createNameableBlockEntityTable);
+        }
     }
 
     @Override

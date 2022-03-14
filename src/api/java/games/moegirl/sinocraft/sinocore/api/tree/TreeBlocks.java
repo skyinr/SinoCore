@@ -1,11 +1,12 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
-import games.moegirl.sinocraft.sinocore.api.util.Suppliers;
 import net.minecraft.world.level.block.*;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
+import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -35,6 +36,8 @@ public class TreeBlocks {
     public final RegistryObject<FenceGateBlock> fenceGate;
     public final RegistryObject<FenceBlock> fence;
     public final RegistryObject<DoorBlock> door;
+    @Nullable
+    public final RegistryObject<ChestBlock> chest;
 
     private final Set<Block> allBlocks = new HashSet<>();
 
@@ -110,6 +113,14 @@ public class TreeBlocks {
         return door.get();
     }
 
+    public ChestBlock chest() {
+        return Objects.requireNonNull(chest).get();
+    }
+
+    public boolean hasChest() {
+        return chest != null;
+    }
+
     public Set<Block> allBlocks() {
         return Set.copyOf(allBlocks);
     }
@@ -136,6 +147,7 @@ public class TreeBlocks {
         fenceGate = register(register, "fence_gate", asSupplier(properties.fenceGate));
         fence = register(register, "fence", asSupplier(properties.fence));
         door = register(register, "door", asSupplier(properties.door));
+        chest = properties.chest == null ? null : register(register, "chest", asSupplier(properties.chest));
     }
 
     private <T extends Block> Supplier<T> asSupplier(Function<Tree, T> factory) {

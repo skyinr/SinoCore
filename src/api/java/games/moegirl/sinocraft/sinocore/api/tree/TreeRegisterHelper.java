@@ -86,9 +86,17 @@ public record TreeRegisterHelper(Tree tree) {
      * modifies sign block entity, call after {@link RegistryEvent} event
      */
     public void registerTileEntityModifiers() {
-        IBlockEntityTypes type = SinoCoreAPI.getMixins().getBlockEntityType(BlockEntityType.SIGN);
-        type.addBlockToEntity(tree.getBlocks().sign());
-        type.addBlockToEntity(tree.getBlocks().wallSign());
+        IBlockEntityTypes sign = SinoCoreAPI.getMixins().getBlockEntityType(BlockEntityType.SIGN);
+        if (!tree.properties.hasCustomSignEntity) {
+            sign.addBlockToEntity(tree.getBlocks().sign());
+        }
+        if (!tree.properties.hasCustomWallSignEntity) {
+            sign.addBlockToEntity(tree.getBlocks().wallSign());
+        }
+        if (tree.properties.hasChest && !tree.properties.hasCustomChestEntity) {
+            IBlockEntityTypes chest = SinoCoreAPI.getMixins().getBlockEntityType(BlockEntityType.CHEST);
+            chest.addBlockToEntity(tree.getBlocks().chest());
+        }
     }
 
     /**
@@ -177,7 +185,7 @@ public record TreeRegisterHelper(Tree tree) {
         provider.addBlock(blocks.sign, chinese + "木告示牌");
         provider.add(Util.makeDescriptionId("block", blocks.wallSign.getId()), "墙上的" + chinese + "木告示牌");
         provider.addBlock(blocks.pressurePlate, chinese + "木压力板");
-        provider.addBlock(blocks.trapdoor, chinese + "木活扳门");
+        provider.addBlock(blocks.trapdoor, chinese + "木活板门");
         provider.addBlock(blocks.stairs, chinese + "木楼梯");
         provider.addBlock(blocks.pottedSapling, chinese + "树苗盆栽");
         provider.addBlock(blocks.button, chinese + "木按钮");
@@ -271,7 +279,7 @@ public record TreeRegisterHelper(Tree tree) {
         provider.add(Util.makeDescriptionId("block", blocks.wallSign.getId()),
                 english + " Wall Sign", "墙上的" + chinese + "木告示牌");
         provider.addBlock(blocks.pressurePlate, english + " Pressure Plate", chinese + "木压力板");
-        provider.addBlock(blocks.trapdoor, english + " Trap Trapdoor", chinese + "木活扳门");
+        provider.addBlock(blocks.trapdoor, english + " Trap Trapdoor", chinese + "木活板门");
         provider.addBlock(blocks.stairs, english + " Stairs", chinese + "木楼梯");
         provider.addBlock(blocks.pottedSapling, "Potted " + english + " Sapling", chinese + "树苗盆栽");
         provider.addBlock(blocks.button, english + " Button", chinese + "木按钮");
@@ -355,6 +363,8 @@ public record TreeRegisterHelper(Tree tree) {
         provider.doorBlock(door, doorBottom, doorTop);
 
         provider.models().fenceInventory(blocks.fence.getId().getPath() + "_inventory", texPlank);
+
+        SinoCoreAPI.LOGGER.warn("Chest block model not generated, please create it yourself");
     }
 
     /**
@@ -387,6 +397,8 @@ public record TreeRegisterHelper(Tree tree) {
         if (items.stick != null) {
             addItem(Objects.requireNonNull(items.stick), "handheld", provider);
         }
+
+        SinoCoreAPI.LOGGER.warn("Chest item model not generated, please create it yourself");
     }
 
     private void addBlockItem(RegistryObject<? extends Block> block, ItemModelProvider provider) {
@@ -403,7 +415,6 @@ public record TreeRegisterHelper(Tree tree) {
         ResourceLocation name = item.get().asItem().delegate.name();
         provider.singleTexture(name.getPath(), provider.mcLoc("item/" + type),
                 "layer0", provider.modLoc("item/" + name.getPath()));
-        System.out.println(provider.modLoc("item/" + name.getPath()) + ": " + provider.mcLoc("item/" + type));
     }
 
     /**
@@ -422,6 +433,8 @@ public record TreeRegisterHelper(Tree tree) {
                 .hasItems(ItemPredicate.Builder.item().of(ItemTags.LOGS).build());
         InventoryChangeTrigger.TriggerInstance hasLog = InventoryChangeTrigger.TriggerInstance
                 .hasItems(ItemPredicate.Builder.item().of(blocks.log()).build());
+        InventoryChangeTrigger.TriggerInstance hasPlank = InventoryChangeTrigger.TriggerInstance
+                .hasItems(ItemPredicate.Builder.item().of(blocks.planks()).build());
         EnterBlockTrigger.TriggerInstance inWater = EnterBlockTrigger.TriggerInstance.entersBlock(Blocks.WATER);
         // planksFromLog
         ShapelessRecipeBuilder.shapeless(blocks.planks(), 4).group("planks")
@@ -448,15 +461,23 @@ public record TreeRegisterHelper(Tree tree) {
                 .pattern("###")
                 .unlockedBy("in_water", inWater)
                 .save(consumer);
+        // chest
+        if (blocks.hasChest()) {
+            ShapedRecipeBuilder.shaped(blocks.chest()).group("chest")
+                    .define('#', blocks.planks())
+                    .pattern("###")
+                    .pattern("# #")
+                    .pattern("###")
+                    .unlockedBy("has_planks", hasPlank)
+                    .save(consumer);
+        }
 
         if (tree.getProperties().hasStick()) {
-            InventoryChangeTrigger.TriggerInstance hasWood = InventoryChangeTrigger.TriggerInstance
-                    .hasItems(ItemPredicate.Builder.item().of(blocks.wood()).build());
             ShapedRecipeBuilder.shaped(Objects.requireNonNull(items.stick()), 4).group("sticks")
                     .define('#', blocks.wood())
                     .pattern("#")
                     .pattern("#")
-                    .unlockedBy("has_planks", hasWood)
+                    .unlockedBy("has_planks", hasPlank)
                     .save(consumer);
         }
     }
@@ -487,6 +508,9 @@ public record TreeRegisterHelper(Tree tree) {
         tag.apply(BlockTags.STANDING_SIGNS).add(blocks.sign());
         tag.apply(BlockTags.WALL_SIGNS).add(blocks.wallSign());
         tag.apply(BlockTags.FENCE_GATES).add(blocks.fenceGate());
+        if (blocks.hasChest()) {
+            tag.apply(Tags.Blocks.CHESTS_WOODEN).add(blocks.chest());
+        }
 
         tag.apply(Tags.Blocks.FENCE_GATES_WOODEN).add(blocks.fenceGate());
     }

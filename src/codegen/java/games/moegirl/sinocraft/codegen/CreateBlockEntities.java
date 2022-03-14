@@ -48,7 +48,7 @@ public class CreateBlockEntities extends DeferredRegisterGenerator {
                 adder.add(className, elementName, classPath);
             } else {
                 System.out.println("Find block entity " + className
-                        + " but not found block games.moegirl.sinocraft.sinocore.common.block.Block" + elementName);
+                        + " but not found block games.moegirl.sinocraft.sinocore.common.block.Block " + elementName);
             }
         }
     }

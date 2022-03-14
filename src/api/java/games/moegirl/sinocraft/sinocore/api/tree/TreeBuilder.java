@@ -4,6 +4,7 @@ import games.moegirl.sinocraft.sinocore.api.block.*;
 import games.moegirl.sinocraft.sinocore.api.world.TreeFeatureBuilder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -20,7 +21,11 @@ import java.util.function.Supplier;
 public class TreeBuilder {
 
     final ResourceLocation name;
-    public boolean hasStick = false;
+    boolean hasStick = false;
+    boolean hasChest = false;
+    boolean customSignEntity = false;
+    boolean customWallSignEntity = false;
+    boolean customChestEntity = false;
     SoundType sound = SoundType.GRASS;
     MaterialColor topLogColor = MaterialColor.WOOD;
     MaterialColor barkLogColor = MaterialColor.WOOD;
@@ -91,6 +96,8 @@ public class TreeBuilder {
                     .strength(3.0F)
                     .sound(SoundType.WOOD)
                     .noOcclusion());
+    Function<Tree, ChestBlock> chest = tree ->
+            new ChestBlock(BlockBehaviour.Properties.copy(Blocks.CHEST).color(plankColor), () -> BlockEntityType.CHEST);
 
     public TreeBuilder(ResourceLocation name) {
         this.name = name;
@@ -293,6 +300,14 @@ public class TreeBuilder {
         return this;
     }
 
+    /**
+     * Has special chest
+     */
+    public TreeBuilder hasChest() {
+        hasChest = true;
+        return this;
+    }
+
     public TreeBuilder customPlanks(Function<Tree, Block> factory) {
         this.planks = factory;
         return this;
@@ -329,12 +344,36 @@ public class TreeBuilder {
     }
 
     public TreeBuilder customSign(Function<Tree, StandingSignBlock> factory) {
+        return customSign(true, factory);
+    }
+
+    /**
+     * Set custom sign block factory
+     *
+     * @param customEntity true if use custom block entity
+     * @param factory      factory to create block
+     * @return this builder
+     */
+    public TreeBuilder customSign(boolean customEntity, Function<Tree, StandingSignBlock> factory) {
         this.sign = factory;
+        this.customSignEntity = customEntity;
         return this;
     }
 
     public TreeBuilder customWallSign(Function<Tree, WallSignBlock> factory) {
+        return customWallSign(true, factory);
+    }
+
+    /**
+     * Set custom sign (on a wall) block factory
+     *
+     * @param customEntity true if use custom block entity
+     * @param factory      factory to create block
+     * @return this builder
+     */
+    public TreeBuilder customWallSign(boolean customEntity, Function<Tree, WallSignBlock> factory) {
         this.wallSign = factory;
+        this.customWallSignEntity = customEntity;
         return this;
     }
 
@@ -380,6 +419,24 @@ public class TreeBuilder {
 
     public TreeBuilder customDoor(Function<Tree, DoorBlock> factory) {
         this.door = factory;
+        return this;
+    }
+
+    public TreeBuilder customChest(Function<Tree, ChestBlock> factory) {
+        return customChest(true, factory);
+    }
+
+    /**
+     * Set custom chest block factory
+     *
+     * @param customEntity true if use custom block entity
+     * @param factory      factory to create block
+     * @return this builder
+     */
+    public TreeBuilder customChest(boolean customEntity, Function<Tree, ChestBlock> factory) {
+        this.chest = factory;
+        this.customChestEntity = customEntity;
+        this.hasChest = true;
         return this;
     }
 

@@ -43,6 +43,9 @@ public class TreeItems {
         registerBlock(register, blocks.fenceGate);
         registerBlock(register, blocks.sign,
                 () -> new SignItem(new Item.Properties().stacksTo(16).tab(tab), blocks.sign(), blocks.wallSign()));
+        if (blocks.chest != null) {
+            registerBlock(register, blocks.chest);
+        }
 
         boat = register.register(tree.getName().getPath() + "_boat", () -> {
             BoatItem item = SinoCoreAPI.getMixins().newBoatItem(tree, new Item.Properties().stacksTo(1).tab(tab));
