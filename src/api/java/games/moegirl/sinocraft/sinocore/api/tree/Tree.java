@@ -1,6 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
-import net.minecraft.data.BlockFamily;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.block.Block;
@@ -44,8 +43,6 @@ public class Tree {
     @Nullable
     TreeItems items;
     @Nullable
-    BlockFamily blockFamily;
-    @Nullable
     Tag.Named<Block> tagLogs;
     @Nullable
     Object boatLayer;
@@ -69,10 +66,6 @@ public class Tree {
 
     public WoodType getType() {
         return type;
-    }
-
-    public BlockFamily getBlockFamily() {
-        return Objects.requireNonNull(blockFamily);
     }
 
     public Tag<Block> getTagLogs() {

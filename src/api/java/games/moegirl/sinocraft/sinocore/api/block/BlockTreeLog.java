@@ -13,19 +13,17 @@ import net.minecraft.world.level.material.MaterialColor;
 /**
  * A class for log and stripped log with tree
  */
-public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock, IStrippable {
+public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock {
 
     private final Tree tree;
-    private final boolean isStripped;
 
-    public BlockTreeLog(Tree tree, boolean isStripped, Properties properties) {
+    public BlockTreeLog(Tree tree, Properties properties) {
         super(properties);
         this.tree = tree;
-        this.isStripped = isStripped;
     }
 
     public BlockTreeLog(Tree tree, boolean isStripped) {
-        this(tree, isStripped, Properties.of(Material.WOOD, state -> color(tree, state, isStripped))
+        this(tree, Properties.of(Material.WOOD, state -> color(tree, state, isStripped))
                 .strength(2.0F)
                 .sound(SoundType.WOOD));
     }
@@ -42,15 +40,5 @@ public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock, IStr
         } else {
             return state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? prop.topLogColor : prop.barkLogColor;
         }
-    }
-
-    @Override
-    public boolean canStripped() {
-        return !isStripped;
-    }
-
-    @Override
-    public BlockState getStrippedBlock() {
-        return tree.getBlocks().strippedLog.get().defaultBlockState();
     }
 }

@@ -1,15 +1,15 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
 import games.moegirl.sinocraft.sinocore.api.data.gen.LanguageProviderBase;
-import games.moegirl.sinocraft.sinocore.api.mixin.IBlockEntityTypes;
 import net.minecraft.Util;
 import net.minecraft.advancements.critereon.EnterBlockTrigger;
 import net.minecraft.advancements.critereon.InventoryChangeTrigger;
 import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.BlockFamilies;
-import net.minecraft.data.BlockFamily;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeProvider;
@@ -21,6 +21,7 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ItemLike;
@@ -34,7 +35,6 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelProvider;
@@ -43,13 +43,9 @@ import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.common.data.LanguageProvider;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -86,53 +82,31 @@ public record TreeRegisterHelper(Tree tree) {
      * modifies sign block entity, call after {@link RegistryEvent} event
      */
     public void registerTileEntityModifiers() {
-        IBlockEntityTypes sign = SinoCoreAPI.getMixins().getBlockEntityType(BlockEntityType.SIGN);
         if (!tree.properties.hasCustomSignEntity) {
-            sign.addBlockToEntity(tree.getBlocks().sign());
-        }
-        if (!tree.properties.hasCustomWallSignEntity) {
-            sign.addBlockToEntity(tree.getBlocks().wallSign());
+            addBlockToEntity(BlockEntityType.SIGN, tree.getBlocks().sign(), tree.getBlocks().wallSign());
         }
         if (tree.properties.hasChest && !tree.properties.hasCustomChestEntity) {
-            IBlockEntityTypes chest = SinoCoreAPI.getMixins().getBlockEntityType(BlockEntityType.CHEST);
-            chest.addBlockToEntity(tree.getBlocks().chest());
+            addBlockToEntity(BlockEntityType.CHEST, tree.getBlocks().chest());
         }
     }
 
+    private void addBlockToEntity(BlockEntityType<?> type, Block... blocks) {
+        ImmutableSet.Builder<Block> builder = ImmutableSet.builder();
+        builder.addAll(type.validBlocks);
+        builder.add(blocks);
+        type.validBlocks = builder.build();
+    }
+
     /**
-     * Register block family, use for add recipes. Called after block register event,
-     * before {@link RenderTooltipEvent.GatherComponents}
-     *
-     * <p>You can invoke this in {@link FMLCommonSetupEvent}</p>
+     * add stripped recipe for axe, call after {@link RegistryEvent} event
      */
-    public void registerBlockFamily() {
-        for (Method method : BlockFamilies.class.getDeclaredMethods()) {
-            if (Modifier.isStatic(method.getModifiers())
-                    && method.getReturnType() == BlockFamily.Builder.class
-                    && method.getParameterCount() == 1
-                    && method.getParameterTypes()[0] == Block.class) {
-                method.setAccessible(true);
-                try {
-                    TreeBlocks blocks = tree.getBlocks();
-                    BlockFamily.Builder builder = (BlockFamily.Builder) method.invoke(null, blocks.planks());
-                    tree.blockFamily = builder.button(blocks.button())
-                            .fence(blocks.fence())
-                            .fenceGate(blocks.fenceGate())
-                            .pressurePlate(blocks.pressurePlate())
-                            .sign(blocks.sign(), blocks.wallSign())
-                            .slab(blocks.slab())
-                            .stairs(blocks.stairs())
-                            .door(blocks.door())
-                            .trapdoor(blocks.trapdoor())
-                            .recipeGroupPrefix("wooden")
-                            .recipeUnlockedBy("has_planks")
-                            .getFamily();
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            }
-        }
+    public void registerAxeStripped() {
+        ImmutableMap.Builder<Block, Block> builder = ImmutableMap.builder();
+        TreeBlocks blocks = tree.getBlocks();
+        builder.putAll(AxeItem.STRIPPABLES);
+        builder.put(blocks.log(), blocks.strippedLog());
+        builder.put(blocks.wood(), blocks.strippedWoods());
+        AxeItem.STRIPPABLES = builder.build();
     }
 
     /**
@@ -427,7 +401,6 @@ public record TreeRegisterHelper(Tree tree) {
     public void addRecipes(Consumer<FinishedRecipe> consumer) {
         TreeItems items = tree.getItems();
         TreeBlocks blocks = tree.getBlocks();
-        registerBlockFamily();
 
         InventoryChangeTrigger.TriggerInstance hasLogs = InventoryChangeTrigger.TriggerInstance
                 .hasItems(ItemPredicate.Builder.item().of(ItemTags.LOGS).build());
@@ -461,6 +434,22 @@ public record TreeRegisterHelper(Tree tree) {
                 .pattern("###")
                 .unlockedBy("in_water", inWater)
                 .save(consumer);
+
+        RecipeProvider.generateRecipes(consumer, BlockFamilies.familyBuilder(blocks.planks())
+                .button(blocks.button())
+                .fence(blocks.fence())
+                .fenceGate(blocks.fenceGate())
+                .pressurePlate(blocks.pressurePlate())
+                .sign(blocks.sign(), blocks.wallSign())
+                .slab(blocks.slab())
+                .stairs(blocks.stairs())
+                .door(blocks.door())
+                .trapdoor(blocks.trapdoor())
+                .recipeGroupPrefix("wooden")
+                .recipeUnlockedBy("has_planks")
+                .dontGenerateModel()
+                .getFamily());
+
         // chest
         if (blocks.hasChest()) {
             ShapedRecipeBuilder.shaped(blocks.chest()).group("chest")

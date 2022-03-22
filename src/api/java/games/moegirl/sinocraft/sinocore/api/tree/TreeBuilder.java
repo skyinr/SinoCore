@@ -24,7 +24,6 @@ public class TreeBuilder {
     boolean hasStick = false;
     boolean hasChest = false;
     boolean customSignEntity = false;
-    boolean customWallSignEntity = false;
     boolean customChestEntity = false;
     SoundType sound = SoundType.GRASS;
     MaterialColor topLogColor = MaterialColor.WOOD;
@@ -373,7 +372,7 @@ public class TreeBuilder {
      */
     public TreeBuilder customWallSign(boolean customEntity, Function<Tree, WallSignBlock> factory) {
         this.wallSign = factory;
-        this.customWallSignEntity = customEntity;
+        this.customSignEntity = customEntity;
         return this;
     }
 

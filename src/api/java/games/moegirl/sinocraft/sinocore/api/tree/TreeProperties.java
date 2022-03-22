@@ -24,7 +24,6 @@ public class TreeProperties {
     public final boolean hasStick;
     public final boolean hasChest;
     public final boolean hasCustomSignEntity;
-    public final boolean hasCustomWallSignEntity;
     public final boolean hasCustomChestEntity;
 
     final Function<Tree, Block> planks;
@@ -65,7 +64,6 @@ public class TreeProperties {
         this.hasStick = builder.hasStick;
         this.hasChest = builder.hasChest;
         this.hasCustomSignEntity = builder.customSignEntity;
-        this.hasCustomWallSignEntity = builder.customWallSignEntity;
         this.hasCustomChestEntity = builder.customChestEntity;
 
         this.planks = builder.planks;
@@ -111,9 +109,5 @@ public class TreeProperties {
 
     public boolean hasCustomSignEntity() {
         return hasCustomSignEntity;
-    }
-
-    public boolean hasCustomWallSignEntity() {
-        return hasCustomWallSignEntity;
     }
 }
