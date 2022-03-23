@@ -4,11 +4,20 @@ import games.moegirl.sinocraft.sinocore.api.tree.Tree;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 /**
  * Get interface to in
  */
 public interface IMixins {
+
+    /**
+     * Create mixed block entity type method
+     *
+     * @param type block entity type
+     * @return methods
+     */
+    IBlockEntityTypes getBlockEntityType(BlockEntityType<?> type);
 
     /**
      * Create mixed block entity type method

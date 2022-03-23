@@ -215,7 +215,6 @@ public class TreeRegister {
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
         forEach(tree -> tree.getRegister().registerTileEntityModifiers());
-        forEach(tree -> tree.getRegister().registerAxeStripped());
     }
 
     private void onClientSetup(FMLClientSetupEvent event) {
