@@ -1,4 +1,4 @@
-package games.moegirl.sinocraft.sinocore.api.data.gen.loot.block;
+package games.moegirl.sinocraft.sinocore.api.data.loot.block;
 
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
 import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
