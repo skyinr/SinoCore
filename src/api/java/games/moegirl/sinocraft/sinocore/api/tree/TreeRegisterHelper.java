@@ -2,7 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.tree;
 
 import com.mojang.datafixers.util.Pair;
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
-import games.moegirl.sinocraft.sinocore.api.data.gen.LanguageProviderBase;
+import games.moegirl.sinocraft.sinocore.api.data.LanguageProviderBase;
 import games.moegirl.sinocraft.sinocore.api.mixin.IBlockEntityTypes;
 import net.minecraft.Util;
 import net.minecraft.advancements.critereon.EnterBlockTrigger;
