@@ -1,6 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.world;
 
-import games.moegirl.sinocraft.sinocore.api.util.Suppliers;
+import games.moegirl.sinocraft.sinocore.api.utility.Suppliers;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
