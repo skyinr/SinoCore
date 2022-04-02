@@ -24,6 +24,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
     protected final List<PlacementModifier> modifiers = new LinkedList<>();
 
     private volatile PlacedFeature result = null;
+    private volatile Holder<PlacedFeature> holder = null;
     private volatile ConfiguredFeature<C, ?> configured = null;
 
     private volatile boolean isConfiguredRegistered = false, isFeatureRegistered = false;
@@ -89,8 +90,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      */
     public ConfiguredFeature<C, ?> configured() {
         if (configured == null) {
-            C config = buildConfiguration();
-            configured = feature.place(config);
+            configured = new ConfiguredFeature<>(feature, buildConfiguration());
         }
         return configured;
     }
@@ -103,7 +103,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      */
     public ConfiguredFeature<C, ?> configured(String name) {
         if (!isConfiguredRegistered) {
-            FeatureUtils.register(name, configured());
+            FeatureUtils.register(name, feature, buildConfiguration());
             isConfiguredRegistered = true;
         }
         return configured;
@@ -150,7 +150,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
         if (result == null) {
             synchronized (this) {
                 if (result == null) {
-                    result = configured().place(modifiers);
+                    result = new PlacedFeature(Holder.direct(configured()), modifiers);
                 }
             }
         }
@@ -163,18 +163,18 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      * @param name default name of configured feature and placed feature
      * @return a registered placed feature
      */
-    public PlacedFeature build(String name) {
+    public Holder<PlacedFeature> build(String name) {
         synchronized (this) {
             if (!isConfiguredRegistered) {
-                FeatureUtils.register(name, configured());
+                configured(name);
                 isConfiguredRegistered = true;
             }
             if (!isFeatureRegistered) {
-                PlacementUtils.register(name, Holder.direct(build()));
+                holder = PlacementUtils.register(name, Holder.direct(configured), modifiers);
                 isFeatureRegistered = true;
             }
         }
-        return result;
+        return holder;
     }
 
     /**
@@ -184,7 +184,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      * @param name  name
      * @return a registered placed feature
      */
-    public PlacedFeature build(String modid, String name) {
+    public Holder<PlacedFeature> build(String modid, String name) {
         return build(modid + ":" + name);
     }
 
@@ -194,7 +194,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      * @param id name
      * @return a registered placed feature
      */
-    public PlacedFeature build(ResourceLocation id) {
+    public Holder<PlacedFeature> build(ResourceLocation id) {
         return build(id.toString());
     }
 
@@ -204,7 +204,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
      * @param buildFor get name from it
      * @return a registered placed feature
      */
-    public PlacedFeature build(RegistryObject<?> buildFor) {
+    public Holder<PlacedFeature> build(RegistryObject<?> buildFor) {
         return build(buildFor.getId());
     }
 
