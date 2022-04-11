@@ -26,6 +26,7 @@ public abstract class BaseFeatureBuilder<C extends FeatureConfiguration, SELF ex
     private volatile PlacedFeature result = null;
     private volatile Holder<PlacedFeature> holder = null;
     private volatile ConfiguredFeature<C, ?> configured = null;
+    private volatile Holder<PlacedFeature> holder = null;
 
     private volatile boolean isConfiguredRegistered = false, isFeatureRegistered = false;
 

@@ -7,6 +7,7 @@ import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -184,7 +185,7 @@ public class TreeRegister {
      *
      * @param tag method to create tag appender, use {@link TagsProvider#tag(Tag.Named)}
      */
-    public void addBlockTags(Function<Tag.Named<Block>, TagsProvider.TagAppender<Block>> tag) {
+    public void addBlockTags(Function<TagKey<Block>, TagsProvider.TagAppender<Block>> tag) {
         forEach(tree -> tree.getRegister().addBlockTags(tag));
     }
 
@@ -193,7 +194,7 @@ public class TreeRegister {
      *
      * @param tag method to create tag appender, use {@link TagsProvider#tag(Tag.Named)}
      */
-    public void addItemTags(Function<Tag.Named<Item>, TagsProvider.TagAppender<Item>> tag) {
+    public void addItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tag) {
         forEach(tree -> tree.getRegister().addItemTags(tag));
     }
 

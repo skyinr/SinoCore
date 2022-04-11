@@ -2,6 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.tree;
 
 import games.moegirl.sinocraft.sinocore.api.block.*;
 import games.moegirl.sinocraft.sinocore.api.world.TreeFeatureBuilder;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -241,12 +242,12 @@ public class TreeBuilder {
 
             @Nullable
             @Override
-            protected ConfiguredFeature<?, ?> getConfiguredFeature(Random pRandom, boolean pLargeHive) {
+            protected Holder<ConfiguredFeature<?, ?>> getConfiguredFeature(Random pRandom, boolean pLargeHive) {
                 if (!initialized) {
                     configuredFeature = feature.apply(pRandom);
                     initialized = true;
                 }
-                return configuredFeature;
+                return Holder.direct(configuredFeature);
             }
         };
         return this;
