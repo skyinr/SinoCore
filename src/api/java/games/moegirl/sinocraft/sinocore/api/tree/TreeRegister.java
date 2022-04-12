@@ -1,7 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
 import com.mojang.datafixers.util.Pair;
-import games.moegirl.sinocraft.sinocore.api.data.gen.LanguageProviderBase;
+import games.moegirl.sinocraft.sinocore.api.data.LanguageProviderBase;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.tags.TagsProvider;
