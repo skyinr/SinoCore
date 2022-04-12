@@ -2,7 +2,6 @@ package games.moegirl.sinocraft.sinocore.api.tree;
 
 import net.minecraft.data.BlockFamily;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.properties.WoodType;
@@ -76,7 +75,7 @@ public class Tree {
         return Objects.requireNonNull(blockFamily);
     }
 
-    public Tag<Block> getTagLogs() {
+    public TagKey<Block> getTagLogs() {
         return Objects.requireNonNull(tagLogs);
     }
 

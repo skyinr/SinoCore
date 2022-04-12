@@ -31,7 +31,7 @@ public class SinoCoreAPI {
      *
      * @return Crafting API
      */
-    public static ICrafting getCraftings() {
+    public static ICrafting getCrafting() {
         return crafting;
     }
 
