@@ -13,6 +13,7 @@ public class SlotHelper {
     public static final int SLOT_SIZE_BY_PIXEL = 18;
 
     /**
+     * Show players' inventory in menu.
      *
      * @param menu Menu to add slot.
      * @param inventory Inventory source.
@@ -24,7 +25,7 @@ public class SlotHelper {
     public static void addPlayerInventory(AbstractContainerMenu menu, Inventory inventory,
                                           int startX, int startY, int deltaX, int deltaY) {
         addInventorySquareByRow(menu, inventory, 9, 27, 9, startX, startY, deltaX, deltaY);
-        addSlotLine(menu, inventory, 0, 9, startX, startY + 58, deltaX, deltaY);
+        addSlotLine(menu, inventory, 0, 9, startX, startY + 58, deltaX, 0);
     }
 
     /**
@@ -51,12 +52,14 @@ public class SlotHelper {
         int y = startY;
 
         for (int i = 0; i < width - 1; i++) {
-            addSlotLine(menu, inventory, index, amount, x, y, 0, deltaY);
+            addSlotLine(menu, inventory, index, width, x, y, 0, deltaY);
             index += height;
             x += deltaX;
         }
 
-        addSlotLine(menu, inventory, index, remainder, x, y, 0, deltaY);
+        if (remainder > 0) {
+            addSlotLine(menu, inventory, index, remainder, x, y, deltaX, 0);
+        }
     }
 
 
@@ -84,12 +87,14 @@ public class SlotHelper {
         int y = startY;
 
         for (int i = 0; i < height - 1; i++) {
-            addSlotLine(menu, inventory, index, amount, x, y, deltaX, 0);
+            addSlotLine(menu, inventory, index, width, x, y, deltaX, 0);
             index += width;
             y += deltaY;
         }
 
-        addSlotLine(menu, inventory, index, remainder, x, y, deltaX, 0);
+        if (remainder > 0) {
+            addSlotLine(menu, inventory, index, remainder, x, y, deltaX, 0);
+        }
     }
 
     /**
