@@ -159,11 +159,8 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
      */
     private Path getPath(ItemModelBuilder model) {
         ResourceLocation loc = model.getLocation();
-        ResourceLocation coreLoc = deferredRegister.getRegistryName();
-        if (coreLoc != null) {
-            return generator.getOutputFolder().resolve("assets/" + coreLoc.getNamespace() + "/models/" + loc.getPath() + ".json");
-        } else {
-            return generator.getOutputFolder().resolve("assets/" + loc.getNamespace() + "/models/" + loc.getPath() + ".json");
-        }
+        return generator.getOutputFolder().resolve("assets/"
+                + deferredRegister.createTagKey("test").location().getNamespace()
+                + "/models/" + loc.getPath() + ".json");
     }
 }
