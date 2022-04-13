@@ -51,7 +51,7 @@ public class SlotHelper {
         int x = startX;
         int y = startY;
 
-        for (int i = 0; i < width - 1; i++) {
+        for (int i = 0; i < width; i++) {
             addSlotLine(menu, inventory, index, width, x, y, 0, deltaY);
             index += height;
             x += deltaX;
@@ -86,7 +86,7 @@ public class SlotHelper {
         int x = startX;
         int y = startY;
 
-        for (int i = 0; i < height - 1; i++) {
+        for (int i = 0; i < height; i++) {
             addSlotLine(menu, inventory, index, width, x, y, deltaX, 0);
             index += width;
             y += deltaY;
