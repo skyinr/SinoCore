@@ -23,8 +23,8 @@ public class SlotHelper {
      */
     public static void addPlayerInventory(AbstractContainerMenu menu, Inventory inventory,
                                           int startX, int startY, int deltaX, int deltaY) {
-        addSlotLine(menu, inventory, 0, 9, startX, startY, deltaX, deltaY);
         addInventorySquareByRow(menu, inventory, 9, 27, 9, startX, startY, deltaX, deltaY);
+        addSlotLine(menu, inventory, 0, 9, startX, startY + 58, deltaX, deltaY);
     }
 
     /**
