@@ -1,5 +1,6 @@
 jdk:
   - openjdk17
+before_install:
+  - "chmod 777 gradlew"
 install:
-  - "chmod gradlew 777"
   - "./gradlew clean build assemble publishToMavenLocal --refresh-dependencies"
