@@ -116,7 +116,6 @@ public class SlotHelper {
     }
 
     public static void addSlotToContainer(AbstractContainerMenu menu, Slot slot) {
-        slot.index = menu.slots.size();
-        menu.slots.add(slot);
+        menu.addSlot(slot);
     }
 }
