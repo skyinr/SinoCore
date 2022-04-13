@@ -8,7 +8,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
 import org.jetbrains.annotations.NotNull;
 
-public class AcceptOnlySlot extends Slot {
+/**
+ * Accept special slot.
+ * @author qyl27
+ */
+public class AcceptSpecialSlot extends Slot {
     protected TagKey<Item> tagKey = null;
     protected ItemLike item = null;
 
@@ -18,8 +22,9 @@ public class AcceptOnlySlot extends Slot {
      * @param index Slot in inventory index.
      * @param x X location in screen of the slot. (From left.)
      * @param y Y location in screen of the slot. (From up.)
+     * @param itemIn The item will accept.
      */
-    public AcceptOnlySlot(Container container, int index, int x, int y, ItemLike itemIn) {
+    public AcceptSpecialSlot(Container container, int index, int x, int y, ItemLike itemIn) {
         super(container, index, x, y);
 
         item = itemIn;
@@ -31,8 +36,9 @@ public class AcceptOnlySlot extends Slot {
      * @param index Slot in inventory index.
      * @param x X location in screen of the slot. (From left.)
      * @param y Y location in screen of the slot. (From up.)
+     * @param tag The tag will accept.
      */
-    public AcceptOnlySlot(Container container, int index, int x, int y, TagKey<Item> tag) {
+    public AcceptSpecialSlot(Container container, int index, int x, int y, TagKey<Item> tag) {
         super(container, index, x, y);
 
         tagKey = tag;
