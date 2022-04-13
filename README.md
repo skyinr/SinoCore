@@ -1,5 +1,5 @@
 # SinoCore / 华夏核心
-Core library of SinoCraft Mods.
+Core library of SinoCraft Mods.  
 华夏系列 Mod 核心库。  
 
 [![](https://jitpack.io/v/SinoCraftProject/SinoCore.svg)](https://jitpack.io/#SinoCraftProject/SinoCore)
