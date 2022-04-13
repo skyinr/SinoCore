@@ -8,6 +8,7 @@ import games.moegirl.sinocraft.sinocore.block.SCBlockItems;
 import games.moegirl.sinocraft.sinocore.block.SCBlocks;
 import games.moegirl.sinocraft.sinocore.block.blockentity.SCBlockEntities;
 import games.moegirl.sinocraft.sinocore.crafting.IngredientRegister;
+import games.moegirl.sinocraft.sinocore.gui.SCMenus;
 import games.moegirl.sinocraft.sinocore.item.SCItems;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -27,6 +28,8 @@ public class SinoCore {
         SCBlocks.register(bus);
         SCBlockItems.register(bus);
         SCBlockEntities.register(bus);
+
+        SCMenus.register(bus);
 
         bus.addListener(this::onSetup);
     }
