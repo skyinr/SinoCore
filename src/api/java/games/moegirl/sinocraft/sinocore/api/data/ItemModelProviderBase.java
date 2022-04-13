@@ -1,6 +1,10 @@
 package games.moegirl.sinocraft.sinocore.api.data;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import net.minecraft.data.DataGenerator;
+import net.minecraft.data.DataProvider;
+import net.minecraft.data.HashCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CrossbowItem;
@@ -14,6 +18,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -27,6 +33,8 @@ import java.util.stream.Collectors;
 public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooBase for our base data providers.
     public static final ResourceLocation GENERATED = new ResourceLocation("item/generated");
     public static final ResourceLocation HANDHELD = new ResourceLocation("item/handheld");
+
+    private static final Gson GSON = (new GsonBuilder()).setPrettyPrinting().create();
 
     protected Set<Item> skipItems = new HashSet<>();
 
@@ -129,5 +137,33 @@ public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooB
         items.stream()
                 .filter(item -> item instanceof TieredItem)
                 .forEach(this::handheldItem);  // skyinr: Tiered items filter.
+    }
+
+    /**
+     * qyl27: Generate all, use modid of DeferredRegister to save to.
+     */
+    @Override
+    protected void generateAll(HashCache cache) {
+        for (ItemModelBuilder model : generatedModels.values()) {
+            Path target = getPath(model);
+            try {
+                DataProvider.save(GSON, cache, model.toJson(), target);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * qyl27: Generate all, use modid of DeferredRegister to save to.
+     */
+    private Path getPath(ItemModelBuilder model) {
+        ResourceLocation loc = model.getLocation();
+        ResourceLocation coreLoc = deferredRegister.getRegistryName();
+        if (coreLoc != null) {
+            return generator.getOutputFolder().resolve("assets/" + coreLoc.getNamespace() + "/models/" + loc.getPath() + ".json");
+        } else {
+            return generator.getOutputFolder().resolve("assets/" + loc.getNamespace() + "/models/" + loc.getPath() + ".json");
+        }
     }
 }
