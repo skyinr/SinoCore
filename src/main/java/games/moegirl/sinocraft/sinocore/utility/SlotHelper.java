@@ -10,7 +10,7 @@ import net.minecraft.world.inventory.Slot;
  * @author qyl27
  */
 public class SlotHelper {
-    public static final int SLOT_SIZE = 18;
+    public static final int SLOT_SIZE_BY_PIXEL = 18;
 
     /**
      *
