@@ -16,7 +16,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
     private void injectCreateTitle(CallbackInfoReturnable<String> cir) {
         if (SinoCoreAPI.DEBUG_MODE) {
-            cir.setReturnValue(cir.getReturnValue() + ": Mixin is loaded");
+            cir.setReturnValue(cir.getReturnValue() + ": SinoSeries Dev");
         }
     }
 }
