@@ -1,9 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.data;
 
-import net.minecraft.core.Registry;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagManager;
 import net.minecraftforge.common.data.ExistingFileHelper;
