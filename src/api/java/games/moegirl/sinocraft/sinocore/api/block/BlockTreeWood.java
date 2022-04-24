@@ -1,6 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
-import games.moegirl.sinocraft.sinocore.api.tree.ITreeBlock;
 import games.moegirl.sinocraft.sinocore.api.tree.Tree;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -23,7 +22,7 @@ public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock, ISt
 
     public BlockTreeWood(Tree tree, boolean isStripped) {
         this(tree, isStripped, Properties.of(Material.WOOD,
-                        isStripped ? tree.getProperties().strippedWoodColor : tree.getProperties().woodColor)
+                        isStripped ? tree.properties().strippedWoodColor() : tree.properties().woodColor())
                 .strength(2.0F)
                 .sound(SoundType.WOOD));
     }
@@ -40,6 +39,6 @@ public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock, ISt
 
     @Override
     public BlockState getStrippedBlock() {
-        return tree.getBlocks().strippedWoods.get().defaultBlockState();
+        return tree.strippedWoods().defaultBlockState();
     }
 }

@@ -1,8 +1,8 @@
 package games.moegirl.sinocraft.sinocore.api.data;
 
+import games.moegirl.sinocraft.sinocore.api.data.base.WarnBlockStateProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.MultiPartBlockStateBuilder;
 import net.minecraftforge.client.model.generators.VariantBlockStateBuilder;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author skyinr
  */
-public class BlockStateProviderBase extends BlockStateProvider {
+public class BlockStateProviderBase extends WarnBlockStateProvider {
     private final DeferredRegister<? extends Block> deferredRegister;
     private boolean adding = true;
     private final Set<Block> skipBlocks = new HashSet<>();

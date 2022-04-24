@@ -3,7 +3,6 @@ package games.moegirl.sinocraft.sinocore;
 import games.moegirl.sinocraft.sinocore.api.ApiLoader;
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
 import games.moegirl.sinocraft.sinocore.api.impl.Crafting;
-import games.moegirl.sinocraft.sinocore.api.impl.Mixins;
 import games.moegirl.sinocraft.sinocore.block.SCBlockItems;
 import games.moegirl.sinocraft.sinocore.block.SCBlocks;
 import games.moegirl.sinocraft.sinocore.block.blockentity.SCBlockEntities;
@@ -40,6 +39,5 @@ public class SinoCore {
 
     private void registerApi(ApiLoader loader) {
         loader.setCrafting(Crafting.INSTANCE);
-        loader.setMixins(Mixins.INSTANCE);
     }
 }

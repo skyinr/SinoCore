@@ -1,7 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
-import games.moegirl.sinocraft.sinocore.api.tree.ITreeBlock;
-import games.moegirl.sinocraft.sinocore.api.tree.Tree;
+import games.moegirl.sinocraft.sinocore.api.woodwork.IWoodwork;
+import games.moegirl.sinocraft.sinocore.api.woodwork.Woodwork;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.Material;
@@ -9,23 +9,23 @@ import net.minecraft.world.level.material.Material;
 /**
  * A class for plank with tree
  */
-public class BlockTreePlanks extends Block implements ITreeBlock {
+public class BlockTreePlanks extends Block implements IWoodwork {
 
-    private final Tree tree;
+    private final Woodwork woodwork;
 
-    public BlockTreePlanks(Tree tree, Properties properties) {
+    public BlockTreePlanks(Woodwork woodwork, Properties properties) {
         super(properties);
-        this.tree = tree;
+        this.woodwork = woodwork;
     }
 
-    public BlockTreePlanks(Tree tree) {
-        this(tree, Properties.of(Material.WOOD, tree.getProperties().plankColor)
+    public BlockTreePlanks(Woodwork woodwork) {
+        this(woodwork, Properties.of(Material.WOOD, woodwork.plankColor)
                 .strength(2.0F, 3.0F)
                 .sound(SoundType.WOOD));
     }
 
     @Override
-    public Tree getTree() {
-        return tree;
+    public Woodwork getWoodwork() {
+        return woodwork;
     }
 }

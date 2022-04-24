@@ -2,6 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.data;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import games.moegirl.sinocraft.sinocore.api.data.base.WarnItemModelProvider;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.HashCache;
@@ -11,7 +12,6 @@ import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TieredItem;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
-import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.common.data.ExistingFileHelper;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  *
  * @author skyinr
  */
-public class ItemModelProviderBase extends ItemModelProvider {  // qyl: Use FooBase for our base data providers.
+public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use FooBase for our base data providers.
     public static final ResourceLocation GENERATED = new ResourceLocation("item/generated");
     public static final ResourceLocation HANDHELD = new ResourceLocation("item/handheld");
 

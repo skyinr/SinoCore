@@ -1,17 +1,21 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
-import net.minecraft.data.BlockFamily;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.WoodType;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.grower.AbstractTreeGrower;
+import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.IForgeRegistryEntry;
+import net.minecraftforge.registries.RegistryObject;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A set of elements about a tree, contains items, blocks, tags, recipes ... and more.
@@ -19,16 +23,13 @@ import java.util.Objects;
 public class Tree {
 
     private static final Map<ResourceLocation, Tree> TREE_BY_NAME = new HashMap<>();
-    private static final Map<WoodType, Tree> TREE_BY_WOOD_TYPE = new HashMap<>();
 
-    @Nullable
-    public static Tree get(ResourceLocation name) {
-        return TREE_BY_NAME.get(name);
+    public static Optional<Tree> get(ResourceLocation name) {
+        return Optional.ofNullable(TREE_BY_NAME.get(name));
     }
 
-    @Nullable
-    public static Tree get(WoodType name) {
-        return TREE_BY_WOOD_TYPE.get(name);
+    public static Optional<Tree> get(String name) {
+        return get(new ResourceLocation(name));
     }
 
     public static TreeBuilder builder(ResourceLocation name) {
@@ -39,64 +40,150 @@ public class Tree {
         return builder(new ResourceLocation(modid, name));
     }
 
-    @Nullable
-    TreeBlocks blocks;
-    @Nullable
-    TreeItems items;
-    @Nullable
-    BlockFamily blockFamily;
-    @Nullable
+    public final RegistryObject<SaplingBlock> sapling;
+    public final RegistryObject<RotatedPillarBlock> log;
+    public final RegistryObject<RotatedPillarBlock> strippedLog;
+    public final RegistryObject<RotatedPillarBlock> wood;
+    public final RegistryObject<RotatedPillarBlock> strippedWoods;
+    public final RegistryObject<LeavesBlock> leaves;
+    public final RegistryObject<FlowerPotBlock> pottedSapling;
+
+    private final Set<Block> allBlocks = new HashSet<>();
+
+    private final Set<Item> allItems = new HashSet<>();
+
     TagKey<Block> tagLogs;
-    @Nullable
-    Object boatLayer;
-    TreeRegisterHelper register = new TreeRegisterHelper(this);
+    TagKey<Item> tagItemLogs;
+    TreeRegister register = new TreeRegister(this);
+    private final BuilderProperties properties;
 
-    public final TreeProperties properties;
-    public final ResourceLocation name;
-    public final WoodType type;
+    Tree(TreeBuilder builder, DeferredRegister<Block> blocks, DeferredRegister<Item> items) {
+        properties = new BuilderProperties(
+                builder.name,
+                builder.tab,
+                builder.sound,
+                builder.topLogColor,
+                builder.topStrippedLogColor,
+                builder.barkLogColor,
+                builder.barkStrippedLogColor,
+                builder.grower,
+                builder.woodColor,
+                builder.strippedWoodColor);
 
-    Tree(TreeBuilder builder) {
-        properties = new TreeProperties(this, builder);
-        this.name = properties.name;
-        this.type = properties.type;
-        TREE_BY_NAME.put(name, this);
-        TREE_BY_WOOD_TYPE.put(type, this);
+        if (builder.grower instanceof TreeSaplingGrower tsg) {
+            tsg.setTree(this);
+        }
+
+        sapling = register(blocks, "sapling", asSupplier(builder.sapling, allBlocks));
+        pottedSapling = register(blocks, "potted", "sapling", asSupplier(builder.pottedSapling, allBlocks));
+        log = register(blocks, "log", asSupplier(builder.log, allBlocks));
+        strippedLog = register(blocks, "stripped", "log", asSupplier(builder.strippedLog, allBlocks));
+        wood = register(blocks, "wood", asSupplier(builder.wood, allBlocks));
+        strippedWoods = register(blocks, "stripped", "wood", asSupplier(builder.strippedWoods, allBlocks));
+        leaves = register(blocks, "leaves", asSupplier(builder.leaves, allBlocks));
+
+        register(items, sapling, asSupplier(builder.saplingItem, allItems));
+        register(items, log, asSupplier(builder.logItem, allItems));
+        register(items, strippedLog, asSupplier(builder.strippedLogItem, allItems));
+        register(items, wood, asSupplier(builder.woodItem, allItems));
+        register(items, strippedWoods, asSupplier(builder.strippedWoodsItem, allItems));
+        register(items, leaves, asSupplier(builder.leavesItem, allItems));
+
+        tagLogs = BlockTags.create(new ResourceLocation(properties.name.getNamespace(),
+                (properties.name.getPath() + "_logs").toLowerCase(Locale.ROOT)));
+        tagItemLogs = ItemTags.create(tagLogs().location());
+
+        TREE_BY_NAME.put(properties.name, this);
     }
 
-    public ResourceLocation getName() {
-        return name;
+    private <T> Supplier<T> asSupplier(Function<Tree, T> factory, Set<? super T> collector) {
+        return () -> {
+            T value = factory.apply(this);
+            collector.add(value);
+            return value;
+        };
     }
 
-    public WoodType getType() {
-        return type;
+    private <T extends IForgeRegistryEntry<T>, V extends T> RegistryObject<V> register(DeferredRegister<T> register,
+                                                                                       String prefix, String postfix,
+                                                                                       Supplier<V> supplier) {
+        return register.register(prefix + "_" + properties.name.getPath() + "_" + postfix, supplier);
     }
 
-    public BlockFamily getBlockFamily() {
-        return Objects.requireNonNull(blockFamily);
+    private <T extends IForgeRegistryEntry<T>, V extends T> RegistryObject<V> register(DeferredRegister<T> register,
+                                                                                       String postfix, Supplier<V> supplier) {
+        return register.register(properties.name.getPath() + "_" + postfix, supplier);
     }
 
-    public TagKey<Block> getTagLogs() {
+    private void register(DeferredRegister<Item> item, RegistryObject<? extends Block> block, Supplier<? extends Item> supplier) {
+        item.register(block.getId().getPath(), supplier);
+    }
+
+    public SaplingBlock sapling() {
+        return sapling.get();
+    }
+
+    public RotatedPillarBlock log() {
+        return log.get();
+    }
+
+    public RotatedPillarBlock strippedLog() {
+        return strippedLog.get();
+    }
+
+    public RotatedPillarBlock wood() {
+        return wood.get();
+    }
+
+    public RotatedPillarBlock strippedWoods() {
+        return strippedWoods.get();
+    }
+
+    public FlowerPotBlock pottedSapling() {
+        return pottedSapling.get();
+    }
+
+    public LeavesBlock leaves() {
+        return leaves.get();
+    }
+
+    public Set<Block> allBlocks() {
+        return Set.copyOf(allBlocks);
+    }
+
+    public Set<Item> allItems() {
+        return Set.copyOf(allItems);
+    }
+
+    public ResourceLocation name() {
+        return properties.name;
+    }
+
+    public TagKey<Block> tagLogs() {
         return Objects.requireNonNull(tagLogs);
     }
 
-    public TreeBlocks getBlocks() {
-        return Objects.requireNonNull(blocks, "Please register blocks before use");
+    public TagKey<Item> tagItemLogs() {
+        return Objects.requireNonNull(tagItemLogs);
     }
 
-    public TreeItems getItems() {
-        return Objects.requireNonNull(items, "Please register items before use");
+    public TreeRegister register() {
+        return register;
     }
 
-    public TreeProperties getProperties() {
+    public BuilderProperties properties() {
         return properties;
     }
 
-    @OnlyIn(Dist.CLIENT)
-    public net.minecraft.client.model.geom.ModelLayerLocation getBoatLayer() {
-        return Objects.requireNonNull((net.minecraft.client.model.geom.ModelLayerLocation) boatLayer);
-    }
-
-    public TreeRegisterHelper getRegister() {
-        return register;
+    public record BuilderProperties(ResourceLocation name,
+                                    CreativeModeTab tab,
+                                    SoundType sound,
+                                    MaterialColor topLogColor,
+                                    MaterialColor topStrippedLogColor,
+                                    MaterialColor barkLogColor,
+                                    MaterialColor barkStrippedLogColor,
+                                    AbstractTreeGrower grower,
+                                    MaterialColor woodColor,
+                                    MaterialColor strippedWoodColor) {
     }
 }

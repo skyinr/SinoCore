@@ -3,13 +3,9 @@
   "compatibilityLevel": "JAVA_17",
   "package": "games.moegirl.sinocraft.sinocore.mixin",
   "mixins": [
-    "MixinAxeItem",
-    "MixinBlockEntityType",
-    "MixinBoat",
-    "MixinBoatItem"
+    "MixinAxeItem"
   ],
   "client": [
-    "MixinBoatRenderer",
     "MixinMinecraft",
     "MixinSheets"
   ],

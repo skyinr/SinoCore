@@ -1,247 +1,227 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
 import com.mojang.datafixers.util.Pair;
-import games.moegirl.sinocraft.sinocore.api.data.LanguageProviderBase;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.ShapelessRecipeBuilder;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.model.generators.BlockStateProvider;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.client.model.generators.ModelProvider;
+import net.minecraftforge.common.data.LanguageProvider;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 
 import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 /**
- * Register trees
+ * * RegisterXxx methods means you must call in the mod, but addXxx is optional.
  */
 @SuppressWarnings("JavadocReference")
-public class TreeRegister {
-
-    private final Map<ResourceLocation, TreeWithLanguage> trees = new HashMap<>();
-
-    private final CreativeModeTab tab;
-    private final DeferredRegister<Item> itemRegister;
-    private final DeferredRegister<Block> blockRegister;
-
-    public TreeRegister(CreativeModeTab tab, DeferredRegister<Item> itemRegister, DeferredRegister<Block> blockRegister) {
-        this.tab = tab;
-        this.itemRegister = itemRegister;
-        this.blockRegister = blockRegister;
-    }
-
-    private void forEach(Consumer<Tree> treeConsumer) {
-        trees.values().forEach(t -> treeConsumer.accept(t.tree));
-    }
+public record TreeRegister(Tree tree) {
 
     /**
-     * Register tree items, blocks, renders, etc to minecraft/forge
-     *
-     * @param bus           event bus
-     * @param tab           items tab
-     * @param itemRegister  register to register items
-     * @param blockRegister register to register blocks
+     * Register all block's render types, call in {@link FMLClientSetupEvent}
      */
-    public void register(IEventBus bus) {
-        bus.addListener(this::onCommonSetup);
-        bus.addListener(this::onClientSetup);
-        if (FMLEnvironment.dist.isClient()) {
-            bus.register(new ClientEvent());
-        }
+    @OnlyIn(Dist.CLIENT)
+    public void registerRenderType() {
+        net.minecraft.client.renderer.RenderType cutoutMipped = net.minecraft.client.renderer.RenderType.cutoutMipped();
+        net.minecraft.client.renderer.RenderType cutout = net.minecraft.client.renderer.RenderType.cutout();
+
+        net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(tree.leaves(), cutoutMipped);
+        net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(tree.sapling(), cutout);
+        net.minecraft.client.renderer.ItemBlockRenderTypes.setRenderLayer(tree.pottedSapling(), cutout);
     }
 
     /**
-     * Add a tree
+     * call this method in {@link LanguageProvider#addTranslations()} or other equivalent method, add chinese name
      *
-     * @param tree tree
-     * @return this tree
+     * @param provider language provider
+     * @param chinese  tree chinese name
      */
-    public Tree register(Tree tree) {
-        return register(null, null, tree);
+    public void addLanguagesZh(LanguageProvider provider, String chinese) {
+        provider.addBlock(tree.sapling, chinese + "树苗");
+        provider.addBlock(tree.log, chinese + "原木");
+        provider.addBlock(tree.strippedLog, "去皮" + chinese + "原木");
+        provider.addBlock(tree.wood, chinese + "木");
+        provider.addBlock(tree.strippedWoods, "去皮" + chinese + "木");
+        provider.addBlock(tree.leaves, chinese + "树叶");
+        provider.addBlock(tree.pottedSapling, chinese + "树苗盆栽");
     }
 
     /**
-     * Add a tree with language
+     * call this method in {@link LanguageProvider#addTranslations()} or other equivalent method, for english language
      *
-     * @param chinese chinese name
-     * @param tree    tree
-     * @return this tree
+     * @param provider language provider
+     * @param english  tree english name
      */
-    public Tree register(@Nullable String chinese, Tree tree) {
-        return register(null, chinese, tree);
+    public void addLanguagesEn(LanguageProvider provider) {
+        addLanguagesEn(provider, defaultEnglishName());
     }
 
     /**
-     * Add a tree with language
-     *
-     * @param english english name
-     * @param chinese chinese name
-     * @param tree    tree
-     * @return this tree
-     */
-    public Tree register(@Nullable String english, @Nullable String chinese, Tree tree) {
-        trees.put(tree.name, new TreeWithLanguage(tree, chinese, english));
-        tree.getRegister().registerBlocks(blockRegister);
-        tree.getRegister().registerItems(itemRegister, tab);
-        return tree;
-    }
-
-    /**
-     * Set tree chinese name
-     *
-     * @param name    tree key
-     * @param chinese chinese name
-     */
-    public void setLanguage(ResourceLocation name, String chinese) {
-        if (trees.containsKey(name)) {
-            trees.get(name).chinese = chinese;
-        }
-    }
-
-    /**
-     * Set tree name
-     *
-     * @param name    tree key
-     * @param english english name
-     * @param chinese chinese name
-     */
-    public void setLanguage(ResourceLocation name, String english, String chinese) {
-        if (trees.containsKey(name)) {
-            TreeWithLanguage tree = trees.get(name);
-            tree.english = english;
-            tree.chinese = chinese;
-        }
-    }
-
-    /**
-     * Add tree languages to data provider, call in {@link LanguageProviderBase#addTranslations()}
+     * call this method in {@link LanguageProvider#addTranslations()} or other equivalent method, for english language
      *
      * @param provider language provider
      */
-    public void addLanguages(LanguageProviderBase provider) {
-        trees.values().forEach(tree -> {
-            if (tree.chinese != null) {
-                if (tree.english != null) {
-                    tree.tree.getRegister().addLanguages(provider, tree.english, tree.chinese);
-                } else {
-                    tree.tree.getRegister().addLanguages(provider, tree.chinese);
-                }
-            }
-        });
+    public void addLanguagesEn(LanguageProvider provider, String english) {
+        provider.addBlock(tree.sapling, english + " Sapling");
+        provider.addBlock(tree.log, english + " Log");
+        provider.addBlock(tree.strippedLog, "Stripped" + english + " Stripped");
+        provider.addBlock(tree.wood, english + " Wood");
+        provider.addBlock(tree.strippedWoods, "Stripped " + english + " Wood");
+        provider.addBlock(tree.leaves, english + " Leaves");
+        provider.addBlock(tree.pottedSapling, "Potted " + english + " Sapling");
+    }
+
+    private String defaultEnglishName() {
+        StringBuilder sb = new StringBuilder();
+        for (String s : tree.name().getPath().split("_")) {
+            if (s.isEmpty()) continue;
+            String s1 = s.toLowerCase(Locale.ROOT);
+            sb.append(Character.toUpperCase(s1.charAt(0)));
+            sb.append(s1.substring(1));
+        }
+        return sb.toString();
     }
 
     /**
-     * Add block models to data provider, call in {@link BlockStateProvider#registerStatesAndModels()}
+     * call this method in {@link BlockStateProvider#registerStatesAndModels} or other equivalent method.
      *
-     * @param provider language provider
+     * @param provider block model provider
      */
     public void addBlockModels(BlockStateProvider provider) {
-        forEach(tree -> tree.getRegister().addBlockModels(provider));
+        provider.simpleBlock(tree.sapling(),
+                provider.models().cross(tree.sapling.getId().getPath(), provider.blockTexture(tree.sapling())));
+        provider.logBlock(tree.log());
+        provider.logBlock(tree.strippedLog());
+        provider.simpleBlock(tree.wood(), provider.models().cubeColumn(tree.wood.getId().getPath(),
+                provider.blockTexture(tree.log()),
+                provider.blockTexture(tree.log())));
+        provider.simpleBlock(tree.strippedWoods(), provider.models().cubeColumn(tree.strippedWoods.getId().getPath(),
+                provider.blockTexture(tree.strippedLog()),
+                provider.blockTexture(tree.strippedLog())));
+        provider.simpleBlock(tree.leaves(), provider.models().singleTexture(
+                tree.leaves.getId().getPath(),
+                provider.mcLoc(ModelProvider.BLOCK_FOLDER + "/leaves"),
+                "all", provider.blockTexture(tree.leaves())));
+        provider.simpleBlock(tree.pottedSapling(), provider.models().singleTexture(
+                tree.pottedSapling.getId().getPath(),
+                provider.mcLoc(ModelProvider.BLOCK_FOLDER + "/flower_pot_cross"),
+                "plant", provider.modLoc(ModelProvider.BLOCK_FOLDER + "/" + tree.sapling.getId().getPath())));
     }
 
     /**
-     * Add item models to data provider, call in {@link ItemModelProvider#registerModels()}
+     * call this method in {@link ItemModelProvider#registerModels} or other equivalent method.
      *
-     * @param provider language provider
+     * @param provider item model provider
      */
     public void addItemModels(ItemModelProvider provider) {
-        forEach(tree -> tree.getRegister().addItemModels(provider));
+        addBlockItem(tree.sapling, provider);
+        addBlockItem(tree.log, provider);
+        addBlockItem(tree.strippedLog, provider);
+        addBlockItem(tree.strippedWoods, provider);
+        addBlockItem(tree.wood, provider);
+        addBlockItem(tree.leaves, provider);
+    }
+
+    private void addBlockItem(RegistryObject<? extends Block> block, ItemModelProvider provider) {
+        String path = block.getId().getPath();
+        provider.withExistingParent(path, provider.modLoc("block/" + path));
     }
 
     /**
-     * Add recipe to data provider, call in {@link net.minecraft.data.recipes.RecipeProvider#buildCraftingRecipes(Consumer)}
+     * call this method in {@link RecipeProvider#buildCraftingRecipes}
+     * or other equivalent method.
      *
-     * @param consumer consumer to build
+     * @param consumer save consumer
+     * @param plank plank name, if not null, will add recipe: log -> 4*planks
      */
-    public void addRecipes(Consumer<FinishedRecipe> consumer) {
-        forEach(tree -> tree.getRegister().addRecipes(consumer));
+    @SuppressWarnings("JavadocReference")
+    public void addRecipes(Consumer<FinishedRecipe> consumer, @Nullable Block planks) {
+        // planksFromLog
+        if (planks != null) {
+            InventoryChangeTrigger.TriggerInstance hasLogs = InventoryChangeTrigger.TriggerInstance
+                    .hasItems(ItemPredicate.Builder.item().of(ItemTags.LOGS).build());
+            ShapelessRecipeBuilder.shapeless(planks, 4).group("planks")
+                    .requires(tree.log())
+                    .unlockedBy("has_log", hasLogs)
+                    .save(consumer);
+        }
+
+        InventoryChangeTrigger.TriggerInstance hasLog = InventoryChangeTrigger.TriggerInstance
+                .hasItems(ItemPredicate.Builder.item().of(tree.log()).build());
+        // woodFromLogs
+        ShapedRecipeBuilder.shaped(tree.wood(), 3).group("bark")
+                .define('#', tree.log())
+                .pattern("##")
+                .pattern("##")
+                .unlockedBy("has_log", hasLog)
+                .save(consumer);
+        ShapedRecipeBuilder.shaped(tree.strippedWoods(), 3).group("bark")
+                .define('#', tree.strippedLog())
+                .pattern("##")
+                .pattern("##")
+                .unlockedBy("has_log", hasLog)
+                .save(consumer);
     }
 
     /**
-     * Add block tags to data provider, call in {@link TagsProvider#addTags()}
+     * call this method in {@link TagsProvider#addTags} or other equivalent method.
      *
-     * @param tag method to create tag appender, use {@link TagsProvider#tag(Tag.Named)}
+     * @param tag tag appender creator, use {@link TagsProvider#tag}
      */
     public void addBlockTags(Function<TagKey<Block>, TagsProvider.TagAppender<Block>> tag) {
-        forEach(tree -> tree.getRegister().addBlockTags(tag));
+        tag.apply(tree.tagLogs).add(tree.log(), tree.strippedLog(), tree.wood(), tree.strippedLog());
+        tag.apply(BlockTags.SAPLINGS).add(tree.sapling());
+        tag.apply(BlockTags.LOGS_THAT_BURN).addTag(tree.tagLogs);
+        tag.apply(BlockTags.FLOWER_POTS).add(tree.pottedSapling());
+        tag.apply(BlockTags.LEAVES).add(tree.leaves());
     }
 
     /**
-     * Add item tags to data provider, call in {@link TagsProvider#addTags()}
+     * call this method in {@link TagsProvider#addTags} or other equivalent method.
      *
-     * @param tag method to create tag appender, use {@link TagsProvider#tag(Tag.Named)}
+     * @param tag tag appender creator, use {@link TagsProvider#tag}
      */
     public void addItemTags(Function<TagKey<Item>, TagsProvider.TagAppender<Item>> tag) {
-        forEach(tree -> tree.getRegister().addItemTags(tag));
+        tag.apply(tree.tagItemLogs)
+                .add(tree.log().asItem(), tree.strippedLog().asItem(), tree.wood().asItem(), tree.strippedLog().asItem());
+        tag.apply(ItemTags.SAPLINGS).add(tree.sapling().asItem());
+        tag.apply(ItemTags.LOGS_THAT_BURN).addTag(tree.tagItemLogs);
+        tag.apply(ItemTags.LEAVES).add(tree.leaves().asItem());
     }
 
     /**
-     * Add loot table to data provider, call in {@link LootTableProvider#getTables()}
+     * call this method in {@link LootTableProvider#getTables()} or other equivalent method.
      *
-     * @param consumer consumer to build
-     * @return all tree loot tables
+     * @param consumer consumer to collect table builder
+     * @return block loot for add tree
      */
-    public Set<TreeBlockLoot> addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer) {
-        Set<TreeBlockLoot> set = new HashSet<>();
-        forEach(tree -> set.add(tree.getRegister().addLoots(consumer)));
-        return set;
-    }
-
-    public Map<ResourceLocation, Tree> getAllTrees() {
-        return trees.values().stream().collect(Collectors.toMap(t -> t.tree.name, t -> t.tree));
-    }
-
-    private void onCommonSetup(FMLCommonSetupEvent event) {
-        forEach(tree -> tree.getRegister().registerTileEntityModifiers());
-    }
-
-    private void onClientSetup(FMLClientSetupEvent event) {
-        forEach(tree -> tree.getRegister().registerRenderType());
-    }
-
-    @OnlyIn(Dist.CLIENT)
-    class ClientEvent {
-
-        @SubscribeEvent
-        public void onLayerDefinitions(net.minecraftforge.client.event.EntityRenderersEvent.RegisterLayerDefinitions event) {
-            forEach(tree -> tree.getRegister().registerBoatLayer(event));
-        }
-    }
-
-    static final class TreeWithLanguage {
-        final Tree tree;
-        @Nullable
-        String chinese;
-        @Nullable
-        String english;
-
-        public TreeWithLanguage(Tree tree, @Nullable String chinese, @Nullable String english) {
-            this.tree = tree;
-            this.chinese = chinese;
-            this.english = english;
-        }
+    public TreeBlockLoot addLoots(Consumer<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> consumer) {
+        TreeBlockLoot loot = new TreeBlockLoot(tree);
+        consumer.accept(Pair.of(() -> loot, LootContextParamSets.BLOCK));
+        return loot;
     }
 }

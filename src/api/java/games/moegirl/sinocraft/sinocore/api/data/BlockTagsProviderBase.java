@@ -1,7 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.data;
 
+import games.moegirl.sinocraft.sinocore.api.data.base.ExtendedBlockTagsProvider;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagManager;
 import net.minecraftforge.common.data.ExistingFileHelper;
@@ -14,7 +14,7 @@ import java.nio.file.Path;
  *
  * @author skyinr
  */
-public abstract class BlockTagsProviderBase extends BlockTagsProvider {
+public abstract class BlockTagsProviderBase extends ExtendedBlockTagsProvider {
     protected String mainModId;
 
     public BlockTagsProviderBase(DataGenerator pGenerator, String modId, @Nullable ExistingFileHelper existingFileHelper) {
@@ -25,27 +25,6 @@ public abstract class BlockTagsProviderBase extends BlockTagsProvider {
         super(pGenerator, modId, existingFileHelper);
         mainModId = mainModIdIn;
     }
-
-    @Override
-    protected void addTags() {
-        addPickaxe();
-        addAxe();
-        addShovel();
-        addHoe();
-
-        addStoneTool();
-        addIronTool();
-        addDiamondTool();
-    }
-
-    public abstract void addPickaxe();
-    public abstract void addAxe();
-    public abstract void addShovel();
-    public abstract void addHoe();
-
-    public abstract void addStoneTool();
-    public abstract void addIronTool();
-    public abstract void addDiamondTool();
 
     @Override
     public String getName() {
