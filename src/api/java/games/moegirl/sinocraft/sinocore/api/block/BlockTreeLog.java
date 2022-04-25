@@ -24,7 +24,7 @@ public class BlockTreeLog extends RotatedPillarBlock implements IStrippable, ITr
 
     public BlockTreeLog(Tree tree, boolean isStripped) {
         this(tree, isStripped, Properties.of(Material.WOOD, state -> color(tree, state, isStripped))
-                .strength(2.0F)
+                .strength(tree.properties().strengthModifier().apply(2), 2.0f)
                 .sound(SoundType.WOOD));
     }
 

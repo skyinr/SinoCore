@@ -20,7 +20,9 @@ public class ModChestBlock extends ChestBlock implements IWoodwork {
     }
 
     protected ModChestBlock(Woodwork woodwork) {
-        super(Properties.copy(Blocks.CHEST).color(woodwork.plankColor), WoodworkManager::chestBlockEntityType);
+        super(Properties.copy(Blocks.CHEST)
+                .strength(woodwork.strengthModifier.apply(2.5f), 2.5f)
+                .color(woodwork.plankColor), WoodworkManager::chestBlockEntityType);
         this.woodwork = woodwork;
     }
 

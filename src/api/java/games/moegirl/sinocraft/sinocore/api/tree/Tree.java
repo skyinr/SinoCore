@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -68,7 +69,8 @@ public class Tree {
                 builder.barkStrippedLogColor,
                 builder.grower,
                 builder.woodColor,
-                builder.strippedWoodColor);
+                builder.strippedWoodColor,
+                builder.strengthModifier);
 
         if (builder.grower instanceof TreeSaplingGrower tsg) {
             tsg.setTree(this);
@@ -184,6 +186,7 @@ public class Tree {
                                     MaterialColor barkStrippedLogColor,
                                     AbstractTreeGrower grower,
                                     MaterialColor woodColor,
-                                    MaterialColor strippedWoodColor) {
+                                    MaterialColor strippedWoodColor,
+                                    FloatModifier strengthModifier) {
     }
 }

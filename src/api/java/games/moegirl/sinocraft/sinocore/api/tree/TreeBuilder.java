@@ -4,6 +4,7 @@ import games.moegirl.sinocraft.sinocore.api.block.BlockTreeLeaves;
 import games.moegirl.sinocraft.sinocore.api.block.BlockTreeLog;
 import games.moegirl.sinocraft.sinocore.api.block.BlockTreeSapling;
 import games.moegirl.sinocraft.sinocore.api.block.BlockTreeWood;
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
@@ -38,6 +39,7 @@ public class TreeBuilder {
     MaterialColor woodColor = MaterialColor.WOOD;
     MaterialColor strippedWoodColor = MaterialColor.WOOD;
     AbstractTreeGrower grower = new OakTreeGrower();
+    FloatModifier strengthModifier = new FloatModifier(0);
 
     Function<Tree, SaplingBlock> sapling = BlockTreeSapling::new;
     Function<Tree, BlockItem> saplingItem = tree -> new BlockItem(tree.sapling(), new Item.Properties().tab(tree.properties().tab()));
@@ -288,6 +290,11 @@ public class TreeBuilder {
 
     public TreeBuilder customPottedSapling(Function<Tree, FlowerPotBlock> factory) {
         this.pottedSapling = factory;
+        return this;
+    }
+
+    public TreeBuilder blockStrengthModifier(FloatModifier modifier) {
+        strengthModifier = modifier;
         return this;
     }
 

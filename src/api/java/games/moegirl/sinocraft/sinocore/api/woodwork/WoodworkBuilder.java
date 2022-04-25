@@ -1,6 +1,8 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
 import games.moegirl.sinocraft.sinocore.api.block.BlockTreePlanks;
+import games.moegirl.sinocraft.sinocore.api.tree.TreeBuilder;
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockSource;
 import net.minecraft.core.Direction;
@@ -27,6 +29,7 @@ public class WoodworkBuilder {
     final ResourceLocation name;
     CreativeModeTab tab = CreativeModeTab.TAB_DECORATIONS;
     MaterialColor plankColor = MaterialColor.WOOD;
+    FloatModifier strengthModifier = new FloatModifier(0);
 
     Function<Woodwork, Block> planks = BlockTreePlanks::new;
     Function<Woodwork, BlockItem> planksItem = defaultBlockItem(Woodwork::planks);
@@ -39,13 +42,13 @@ public class WoodworkBuilder {
             PressurePlateBlock.Sensitivity.EVERYTHING,
             BlockBehaviour.Properties.of(Material.WOOD, woodwork.planks().defaultMaterialColor())
                     .noCollission()
-                    .strength(0.5F)
+                    .strength(woodwork.strengthModifier.apply(0.5f), 0.5f)
                     .sound(SoundType.WOOD));
     Function<Woodwork, BlockItem> pressurePlateItem = defaultBlockItem(Woodwork::pressurePlate);
 
     Function<Woodwork, TrapDoorBlock> trapdoor = woodwork ->
             new TrapDoorBlock(BlockBehaviour.Properties.of(Material.WOOD, woodwork.plankColor)
-                    .strength(3.0F)
+                    .strength(woodwork.strengthModifier.apply(3), 3)
                     .sound(SoundType.WOOD)
                     .noOcclusion()
                     .isValidSpawn((_1, _2, _3, _4) -> false));
@@ -57,30 +60,30 @@ public class WoodworkBuilder {
 
     Function<Woodwork, ButtonBlock> button = woodwork -> new WoodButtonBlock(BlockBehaviour.Properties.of(Material.DECORATION)
             .noCollission()
-            .strength(0.5F)
+            .strength(woodwork.strengthModifier.apply(0.5f), 0.5f)
             .sound(SoundType.WOOD));
     Function<Woodwork, BlockItem> buttonItem = defaultBlockItem(Woodwork::button);
 
     Function<Woodwork, SlabBlock> slab = woodwork -> new SlabBlock(BlockBehaviour.Properties.of(Material.WOOD, woodwork.plankColor)
-            .strength(2.0F, 3.0F)
+            .strength(woodwork.strengthModifier.apply(2), 3)
             .sound(SoundType.WOOD));
     Function<Woodwork, BlockItem> slabItem = defaultBlockItem(Woodwork::slab);
 
     Function<Woodwork, FenceGateBlock> fenceGate = woodwork ->
             new FenceGateBlock(BlockBehaviour.Properties.of(Material.WOOD, woodwork.planks().defaultMaterialColor())
-                    .strength(2.0F, 3.0F)
+                    .strength(woodwork.strengthModifier.apply(2), 3)
                     .sound(SoundType.WOOD));
     Function<Woodwork, BlockItem> fenceGateItem = defaultBlockItem(Woodwork::fenceGate);
 
     Function<Woodwork, FenceBlock> fence = woodwork ->
             new FenceBlock(BlockBehaviour.Properties.of(Material.WOOD, woodwork.planks().defaultMaterialColor())
-                    .strength(2.0F, 3.0F)
+                    .strength(woodwork.strengthModifier.apply(2), 3)
                     .sound(SoundType.WOOD));
     Function<Woodwork, BlockItem> fenceItem = defaultBlockItem(Woodwork::fence);
 
     Function<Woodwork, DoorBlock> door = woodwork ->
             new DoorBlock(BlockBehaviour.Properties.of(Material.WOOD, woodwork.planks().defaultMaterialColor())
-                    .strength(3.0F)
+                    .strength(woodwork.strengthModifier.apply(3), 3)
                     .sound(SoundType.WOOD)
                     .noOcclusion());
     Function<Woodwork, BlockItem> doorItem = woodwork ->
@@ -332,6 +335,11 @@ public class WoodworkBuilder {
 
     private Function<Woodwork, BlockItem> defaultBlockItem(Function<Woodwork, Block> block) {
         return woodwork -> new BlockItem(block.apply(woodwork), new Item.Properties().tab(woodwork.tab));
+    }
+
+    public WoodworkBuilder blockStrengthModifier(FloatModifier modifier) {
+        strengthModifier = modifier;
+        return this;
     }
 
     public Woodwork build() {

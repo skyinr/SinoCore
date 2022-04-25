@@ -18,10 +18,10 @@ public class BlockTreeLeaves extends LeavesBlock implements ITreeBlock {
     }
 
     public BlockTreeLeaves(Tree tree) {
-        this(tree, Properties.of(Material.LEAVES).strength(0.2F)
+        this(tree, Properties.of(Material.LEAVES)
                 .randomTicks()
                 .sound(tree.properties().sound())
-                .noOcclusion()
+                .strength(tree.properties().strengthModifier().apply(.2f), .2f)
                 .isValidSpawn((_1, _2, _3, entity) -> entity == EntityType.OCELOT || entity == EntityType.PARROT)
                 .isSuffocating((_1, _2, _3) -> false)
                 .isViewBlocking((_1, _2, _3) -> false));

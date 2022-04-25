@@ -22,7 +22,7 @@ public class BlockTreeSapling extends SaplingBlock implements ITreeBlock {
         this(tree.properties().grower(), Properties.of(Material.PLANT)
                 .noCollission()
                 .randomTicks()
-                .instabreak()
+                .strength(tree.properties().strengthModifier().apply(0), 0)
                 .sound(SoundType.GRASS), tree);
     }
 

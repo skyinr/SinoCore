@@ -23,7 +23,7 @@ public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock, ISt
     public BlockTreeWood(Tree tree, boolean isStripped) {
         this(tree, isStripped, Properties.of(Material.WOOD,
                         isStripped ? tree.properties().strippedWoodColor() : tree.properties().woodColor())
-                .strength(2.0F)
+                .strength(tree.properties().strengthModifier().apply(2), 2.0f)
                 .sound(SoundType.WOOD));
     }
 

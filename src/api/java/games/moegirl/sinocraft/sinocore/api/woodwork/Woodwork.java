@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.CreativeModeTab;
@@ -59,6 +60,7 @@ public class Woodwork {
     public final WoodType type;
     public final ResourceLocation name;
     public final CreativeModeTab tab;
+    public final FloatModifier strengthModifier;
 
     // blocks
     public final RegistryObject<Block> planks;
@@ -91,6 +93,7 @@ public class Woodwork {
         this.name = builder.name;
         this.type = WoodType.register(WoodType.create(name.toString()));
         this.tab = builder.tab;
+        this.strengthModifier = builder.strengthModifier;
 
         this.planks = register(WoodworkManager.blocks(), "planks", asSupplier(builder.planks, allBlocks));
         this.sign = register(WoodworkManager.blocks(), "sign", asSupplier(builder.sign, allBlocks, WoodworkManager.signBlocks, !builder.customSignEntity));
