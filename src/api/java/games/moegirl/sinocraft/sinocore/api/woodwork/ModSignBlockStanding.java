@@ -6,26 +6,24 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.Mirror;
+import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.material.Material;
 
 import static net.minecraft.world.level.block.StandingSignBlock.ROTATION;
 
 public class ModSignBlockStanding extends ModSignBlock {
 
-    public ModSignBlockStanding(Woodwork woodwork, Properties properties) {
+    public ModSignBlockStanding(Properties properties, Woodwork woodwork) {
         super(woodwork, properties);
         this.registerDefaultState(this.stateDefinition.any()
                 .setValue(ROTATION, 0)
                 .setValue(WATERLOGGED, Boolean.FALSE));
-    }
-
-    public ModSignBlockStanding(Woodwork woodwork) {
-        this(woodwork, Properties.of(Material.WOOD, woodwork.plankColor).noCollission().strength(1.0F).sound(SoundType.WOOD));
     }
 
     @Override

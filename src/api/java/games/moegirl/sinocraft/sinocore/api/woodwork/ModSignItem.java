@@ -18,8 +18,8 @@ public class ModSignItem extends StandingAndWallBlockItem {
         super(pStandingBlock, pWallBlock, pProperties);
     }
 
-    public ModSignItem(Woodwork woodwork) {
-        this(new Properties().stacksTo(16).tab(woodwork.tab), woodwork.sign(), woodwork.wallSign());
+    public ModSignItem(Properties properties, Woodwork woodwork) {
+        this(properties, woodwork.sign(), woodwork.wallSign());
     }
 
     protected boolean updateCustomBlockEntityTag(BlockPos pPos, Level pLevel, @Nullable Player pPlayer, ItemStack pStack, BlockState pState) {

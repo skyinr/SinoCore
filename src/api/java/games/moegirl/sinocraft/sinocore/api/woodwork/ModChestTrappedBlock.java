@@ -7,7 +7,6 @@ import net.minecraft.stats.Stat;
 import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
@@ -21,10 +20,8 @@ public class ModChestTrappedBlock extends ModChestBlock {
         super(woodwork, properties, typeSupplier);
     }
 
-    public ModChestTrappedBlock(Woodwork woodwork) {
-        super(woodwork, Properties.copy(Blocks.TRAPPED_CHEST)
-                .strength(woodwork.strengthModifier.apply(2.5f), 2.5f)
-                .color(woodwork.plankColor), WoodworkManager::trappedChestBlockEntityType);
+    public ModChestTrappedBlock(Properties properties, Woodwork woodwork) {
+        super(woodwork, properties, WoodworkManager::trappedChestBlockEntityType);
     }
 
     @Override

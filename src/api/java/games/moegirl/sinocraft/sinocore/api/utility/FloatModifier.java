@@ -7,34 +7,24 @@ import java.util.List;
 
 public final class FloatModifier {
 
-    private final float baseValue;
     private final List<Float2FloatFunction> calcBefore;
     private final List<Float2FloatFunction> calcAfter;
     private float delta;
 
-    public FloatModifier(float baseValue) {
-        this(baseValue, 0, new LinkedList<>(), new LinkedList<>());
+    public FloatModifier() {
+        this(0, new LinkedList<>(), new LinkedList<>());
     }
 
-    FloatModifier(float baseValue, float delta, List<Float2FloatFunction> calcBefore, List<Float2FloatFunction> calcAfter) {
-        this.baseValue = baseValue;
+    FloatModifier(float delta, List<Float2FloatFunction> calcBefore, List<Float2FloatFunction> calcAfter) {
         this.delta = delta;
         this.calcBefore = calcBefore;
         this.calcAfter = calcAfter;
     }
 
-    public float getBaseValue() {
-        return baseValue;
-    }
-
-    public float getResult() {
+    public float apply(float baseValue) {
         float result = calc(baseValue, calcBefore);
         result += delta;
-        return calc(baseValue, calcAfter);
-    }
-
-    public float apply(float baseValue) {
-        return copy(baseValue).getResult();
+        return calc(result, calcAfter);
     }
 
     private float calc(float baseValue, List<Float2FloatFunction> funcs) {
@@ -80,9 +70,5 @@ public final class FloatModifier {
     public FloatModifier calcAfter(Float2FloatFunction func) {
         calcAfter.add(func);
         return this;
-    }
-
-    public FloatModifier copy(float baseValue) {
-        return new FloatModifier(baseValue, delta, new LinkedList<>(calcBefore), new LinkedList<>(calcAfter));
     }
 }
