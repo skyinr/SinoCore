@@ -135,7 +135,7 @@ public record WoodworkRegisterHelper(Woodwork woodwork) {
         provider.addBlock(woodwork.door, chinese + "木门");
         provider.addItem(woodwork.boat, chinese + "木船");
         if (woodwork.chest != null) {
-            provider.addBlock(woodwork.chest, chinese + "木箱子");
+            provider.addBlock(woodwork.chest, chinese + "木匣");
         }
         if (woodwork.trappedChest != null) {
             provider.addBlock(woodwork.trappedChest, chinese + "木陷阱箱");
