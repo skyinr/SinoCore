@@ -74,11 +74,19 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
     }
 
     /**
+     * @param items Set of items.
+     * @return
+     */
+    protected void skipItems(RegistryObject<? extends Item>... items) {
+        skipItems.addAll(Arrays.stream(items).map(RegistryObject::get).toList());
+    }
+
+    /**
      * Register item block model.
      *
      * @param itemBlocks Set of item block.
      */
-    private void registerItemBlock(@NotNull Set<BlockItem> itemBlocks) {
+    protected void registerItemBlock(@NotNull Set<BlockItem> itemBlocks) {
         itemBlocks.forEach(i -> withExistingParent(name(i),
                 modLoc("block/" + name(i))));   // qyl: Change prefix to mc builtin "modLoc".
     }
@@ -89,7 +97,7 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
      * @param name Name of items.
      * @return Builders.
      */
-    private ItemModelBuilder handheldItem(String name) {
+    protected ItemModelBuilder handheldItem(String name) {
         return withExistingParent(name, HANDHELD)
                 .texture("layer0", modLoc("item/" + name));    // qyl: Change prefix to mc builtin "modLoc".
     }
@@ -97,7 +105,7 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
     /**
      * @see ItemModelProviderBase#handheldItem(String)
      */
-    private ItemModelBuilder handheldItem(Item i) {
+    protected ItemModelBuilder handheldItem(Item i) {
         return handheldItem(name(i));
     }
 
@@ -107,7 +115,7 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
      * @param name Name of items.
      * @return item model builder
      */
-    private ItemModelBuilder generatedItem(String name) {
+    protected ItemModelBuilder generatedItem(String name) {
         return withExistingParent(name, GENERATED)
                 .texture("layer0", modLoc("item/" + name));    // qyl: Change prefix to mc builtin "modLoc".
     }
@@ -115,7 +123,7 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
     /**
      * @see ItemModelProviderBase#generatedItem(String)
      */
-    private ItemModelBuilder generatedItem(Item i) {
+    protected ItemModelBuilder generatedItem(Item i) {
         return generatedItem(name(i));
     }
 
@@ -125,7 +133,7 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
      * @param item item
      * @return item name
      */
-    private static String name(Item item) { // Todo: qyl: Avoid direct use string Path, use ResourceLocation instead.
+    protected static String name(Item item) { // Todo: qyl: Avoid direct use string Path, use ResourceLocation instead.
         return ForgeRegistries.ITEMS.getKey(item).getPath();
     }
 
