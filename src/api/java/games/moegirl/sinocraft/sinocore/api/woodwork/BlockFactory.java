@@ -1,16 +1,16 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
-import games.moegirl.sinocraft.sinocore.api.mixin.IBlockProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public class BlockFactory<B extends Block, I extends BlockItem> {
+public class BlockFactory<B extends Block, I extends BlockItem, E extends BlockEntity> {
 
     WoodworkBuilder builder;
     String name;
@@ -51,10 +51,7 @@ public class BlockFactory<B extends Block, I extends BlockItem> {
     }
 
     public B newBlock(Woodwork woodwork) {
-        BlockBehaviour.Properties p = properties.apply(woodwork);
-        float destroyTime = builder.strengthModifier.apply(((IBlockProperties) p).getDestroyTime());
-        p.strength(destroyTime, ((IBlockProperties) p).getExplosionResistance());
-        return factory.apply(p, woodwork);
+        return factory.apply(properties.apply(woodwork), woodwork);
     }
 
     public I newItem(Woodwork woodwork) {

@@ -1,7 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
-import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
-import games.moegirl.sinocraft.sinocore.api.utility.BlockLootables;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -34,12 +32,6 @@ public class WoodworkBlockLoot extends BlockLoot {
         addDrop(woodwork.fenceGate(), BlockLoot::createSingleItemTable);
         addDrop(woodwork.fence(), BlockLoot::createSingleItemTable);
         addDrop(woodwork.door(), BlockLoot::createDoorTable);
-        if (woodwork.hasChest()) {
-            addDrop(woodwork.chest(), BlockLoot::createNameableBlockEntityTable);
-        }
-        if (woodwork.hasTrappedChest()) {
-            addDrop(woodwork.trappedChest(), BlockLoot::createNameableBlockEntityTable);
-        }
     }
 
     @Override
@@ -57,11 +49,15 @@ public class WoodworkBlockLoot extends BlockLoot {
     }
 
     private void addDrop(Block block, Function<Block, LootTable.Builder> drop) {
-        if (block instanceof ILootableBlock lootable) {
-            add(block, lootable.createLootBuilder(BlockLootables.INSTANCE));
+        if (block instanceof ILootable lootable) {
+            add(block, lootable.createLootBuilder());
         } else {
             add(block, drop);
         }
         addedBlocks.add(block);
+    }
+
+    public interface ILootable {
+        LootTable.Builder createLootBuilder();
     }
 }

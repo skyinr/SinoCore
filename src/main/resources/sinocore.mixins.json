@@ -7,8 +7,7 @@
     "MixinBlockProperties"
   ],
   "client": [
-    "MixinMinecraft",
-    "MixinSheets"
+    "MixinMinecraft"
   ],
   "minVersion": "0.8"
 }
