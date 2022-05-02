@@ -19,29 +19,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 
-/**
- * Woodwork, from planks to sign, trapdoor, button, fence, door, and other all vanilla wooden blocks and item(boat),
- *
- * <p>It need mixin {@link com.example.examplemod.mixin.woodwork.MixinSheets} to initialize chest texture
- * if the woodwork contains chest or trapped chest</p>
- *
- * <p>Require textures:</p>
- * <ul>
- *     <li>Item: door, sign</li>
- *     <li>Block: planks</li>
- *     <li>Door: assets.[modid].textures.block.[woodwork]_door_top.png</li>
- *     <li>Door: assets.[modid].textures.block.[woodwork]_door_botton.png</li>
- *     <li>Sign: assets.[modid].textures.entity.signs.[woodwork].png</li>
- *     <li>Chest(normal):  assets.[modid].textures.entity.chest.[woodwork].png</li>
- *     <li>Chest(left):  assets.[modid].textures.entity.chest.[woodwork]_left.png</li>
- *     <li>Chest(right):  assets.[modid].textures.entity.chest.[woodwork]_right.png</li>
- *     <li>TrappedChest(normal):  assets.[modid].textures.entity.chest.[woodwork]_trapped.png</li>
- *     <li>TrappedChest(left):  assets.[modid].textures.entity.chest.[woodwork]_trapped_left.png</li>
- *     <li>TrappedChest(right):  assets.[modid].textures.entity.chest.[woodwork]_trapped_right.png</li>
- * </ul>
- *
- * <p>Two door textures is optional. If not exist, use planks texture.</p>
- */
 public class Woodwork {
 
     public static WoodworkBuilder builder(String name) {

@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.DoubleHighBlockItem;
@@ -116,6 +117,8 @@ public class WoodworkBuilder {
                     .noOcclusion(),
             DoorBlock::new,
             (p, w) -> new DoubleHighBlockItem(w.door(), p));
+
+    FloatModifier strengthModifier = new FloatModifier();
 
     public WoodworkBuilder(String name) {
         this.name = name;
@@ -410,6 +413,11 @@ public class WoodworkBuilder {
 
     public WoodworkBuilder customDoorItemProperties(Function<Woodwork, Item.Properties> factory) {
         return customItemProperties(door, factory);
+    }
+
+    public WoodworkBuilder customStrengthModifier(Function<FloatModifier, FloatModifier> modifier) {
+        strengthModifier = modifier.apply(strengthModifier);
+        return this;
     }
 
     private <T extends Block> WoodworkBuilder customBlock(BlockFactory<T, ?, ?> holder, boolean customEntity, Function<Woodwork, T> factory) {

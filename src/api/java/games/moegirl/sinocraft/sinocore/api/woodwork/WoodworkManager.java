@@ -45,18 +45,15 @@ public class WoodworkManager {
     private final DeferredRegister<Item> items;
     private final DeferredRegister<Block> blocks;
     private final DeferredRegister<BlockEntityType<?>> blockEntities;
-    private final DeferredRegister<EntityType<?>> entities;
     private final NetworkHolder network;
 
     public WoodworkManager(String modid,
                            DeferredRegister<Item> items, DeferredRegister<Block> blocks,
-                           DeferredRegister<BlockEntityType<?>> blockEntities,
-                           DeferredRegister<EntityType<?>> entities, NetworkHolder network) {
+                           DeferredRegister<BlockEntityType<?>> blockEntities, NetworkHolder network) {
         this.modid = modid;
         this.items = items;
         this.blocks = blocks;
         this.blockEntities = blockEntities;
-        this.entities = entities;
         this.network = network;
 
         network.register(ModSignEditOpenPkt.class, ModSignEditOpenPkt::write, ModSignEditOpenPkt::read, ModSignEditOpenPkt::handleClient);
@@ -115,10 +112,6 @@ public class WoodworkManager {
 
     public DeferredRegister<BlockEntityType<?>> blockEntities() {
         return blockEntities;
-    }
-
-    public DeferredRegister<EntityType<?>> entities() {
-        return entities;
     }
 
     public NetworkHolder network() {
