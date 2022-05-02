@@ -1,5 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
+import games.moegirl.sinocraft.sinocore.api.mixin.IBlockProperties;
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -50,8 +52,12 @@ public class BlockFactory<B extends Block, I extends BlockItem, E extends BlockE
         this(builder, name, properties, null, (p, b) -> factory.apply(p), itemFactory);
     }
 
-    public B newBlock(Woodwork woodwork) {
-        return factory.apply(properties.apply(woodwork), woodwork);
+    public B newBlock(Woodwork woodwork, FloatModifier strengthModifier) {
+        BlockBehaviour.Properties prop = properties.apply(woodwork);
+        float strength = ((IBlockProperties) prop).getDestroyTime();
+        float resistance = ((IBlockProperties) prop).getExplosionResistance();
+        prop = prop.strength(strengthModifier.apply(strength), resistance);
+        return factory.apply(prop, woodwork);
     }
 
     public I newItem(Woodwork woodwork) {

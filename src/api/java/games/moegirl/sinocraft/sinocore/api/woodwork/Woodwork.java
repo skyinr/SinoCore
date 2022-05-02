@@ -64,17 +64,17 @@ public class Woodwork {
         this.type = WoodType.register(WoodType.create(name.toString()));
         this.tab = builder.tab;
 
-        this.planks = addBlock(builder.planks);
-        this.sign = addBlock(builder.sign);
-        this.wallSign = addBlock(builder.wallSign, false);
-        this.pressurePlate = addBlock(builder.pressurePlate);
-        this.trapdoor = addBlock(builder.trapdoor);
-        this.stairs = addBlock(builder.stairs);
-        this.button = addBlock(builder.button);
-        this.slab = addBlock(builder.slab);
-        this.fenceGate = addBlock(builder.fenceGate);
-        this.fence = addBlock(builder.fence);
-        this.door = addBlock(builder.door);
+        this.planks = addBlock(builder, builder.planks);
+        this.sign = addBlock(builder, builder.sign);
+        this.wallSign = addBlock(builder, builder.wallSign, false);
+        this.pressurePlate = addBlock(builder, builder.pressurePlate);
+        this.trapdoor = addBlock(builder, builder.trapdoor);
+        this.stairs = addBlock(builder, builder.stairs);
+        this.button = addBlock(builder, builder.button);
+        this.slab = addBlock(builder, builder.slab);
+        this.fenceGate = addBlock(builder, builder.fenceGate);
+        this.fence = addBlock(builder, builder.fence);
+        this.door = addBlock(builder, builder.door);
 
         this.signEntity = addBlockEntity(builder.sign, () -> new BlockEntityType<>((p, s) ->
                 new ModSignBlockEntity(signEntity(), p, s), Set.of(sign()), null));
@@ -165,9 +165,9 @@ public class Woodwork {
         return manager;
     }
 
-    private <B extends Block> RegistryObject<B> addBlock(BlockFactory<B, ? extends BlockItem, ?> factory, boolean hasItem) {
+    private <B extends Block> RegistryObject<B> addBlock(WoodworkBuilder builder, BlockFactory<B, ? extends BlockItem, ?> factory, boolean hasItem) {
         RegistryObject<B> block = register(manager.blocks(), factory.name, () -> {
-            B b = factory.newBlock(this);
+            B b = factory.newBlock(this, builder.strengthModifier);
             allBlocks.add(b);
             return b;
         });
@@ -181,8 +181,8 @@ public class Woodwork {
         return block;
     }
 
-    private <B extends Block> RegistryObject<B> addBlock(BlockFactory<B, ? extends BlockItem, ?> factory) {
-        return addBlock(factory, true);
+    private <B extends Block> RegistryObject<B> addBlock(WoodworkBuilder builder, BlockFactory<B, ? extends BlockItem, ?> factory) {
+        return addBlock(builder, factory, true);
     }
 
     @Nullable
