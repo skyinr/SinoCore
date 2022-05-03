@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 /**
  * Add english and chinese language
  */
+@Deprecated(forRemoval = true, since = "1.1.2")
 public abstract class LanguageProviderBase implements DataProvider {
 
     protected final Map<String, String> enData = new HashMap<>();

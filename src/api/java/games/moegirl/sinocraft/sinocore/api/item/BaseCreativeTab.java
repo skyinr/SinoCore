@@ -6,6 +6,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * A create tab impl
@@ -18,17 +19,30 @@ public abstract class BaseCreativeTab extends CreativeModeTab {
         super(label);
     }
 
-    @Override
-    public ItemStack makeIcon() {
-        if (icon == null) {
-            var icon = getIcon();
-            if (icon == null) {
-                return new ItemStack(Items.POTATO);  // qyl27: For a meme.
-            }
-        }
-        return icon;
+    /**
+     * Set the icon of this tab
+     * @param label The label of the tab.
+     * @param iconItem The icon of the tab.
+     */
+    protected BaseCreativeTab(String label, ItemLike iconItem) {
+        super(label);
+
+        icon = iconItem.asItem().getDefaultInstance();
     }
 
+    @Override
+    public ItemStack makeIcon() {
+        // qyl27: Potato is a meme.
+
+        // Todo: remove it in ver 1.2.0.
+        if (getIcon() != null) {
+            return getIcon().asItem().getDefaultInstance();
+        }
+
+        return Objects.requireNonNullElseGet(icon, () -> new ItemStack(Items.POTATO));
+    }
+
+    @Deprecated(forRemoval = true, since = "1.1.2")
     @Nullable
     public abstract ItemLike getIcon();
 }

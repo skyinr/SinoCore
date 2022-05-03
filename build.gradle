@@ -25,7 +25,7 @@ apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.18.2-1.1.1'
+version = '1.18.2-1.1.2'
 group = 'games.moegirl.sinocraft.sinocore' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'sinocore'
 
@@ -191,7 +191,7 @@ jar {
         attributes([
                 "Specification-Title"     : "sinocore",
                 "Specification-Vendor"    : "SinoCraft Project Team",
-                "Specification-Version"   : "2", // We are version 1 of ourselves
+                "Specification-Version"   : "3", // We are version 1 of ourselves
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : project.jar.archiveVersion,
                 "Implementation-Vendor"   : "MoeGirl Games",

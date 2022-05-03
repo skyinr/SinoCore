@@ -169,6 +169,6 @@ public class ItemModelProviderBase extends WarnItemModelProvider {  // qyl: Use 
         ResourceLocation loc = model.getLocation();
         return generator.getOutputFolder().resolve("assets/"
                 + deferredRegister.createTagKey("test").location().getNamespace()
-                + "/models/" + loc.getPath() + ".json");
+                + "/models/" + loc.getPath() + ".json");    // qyl: Did it work?
     }
 }

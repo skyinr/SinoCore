@@ -7,7 +7,7 @@ import net.minecraftforge.common.capabilities.CapabilityToken;
 /**
  * All capability
  */
-public class ModCapabilities {
+public class SCCapabilities {
 
     public static final Capability<IHeat> HEAT = CapabilityManager.get(new CapabilityToken<>() {
     });
