@@ -1,5 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.woodwork;
 
+import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
+import games.moegirl.sinocraft.sinocore.api.utility.BlockLootables;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
@@ -49,15 +51,11 @@ public class WoodworkBlockLoot extends BlockLoot {
     }
 
     private void addDrop(Block block, Function<Block, LootTable.Builder> drop) {
-        if (block instanceof ILootable lootable) {
-            add(block, lootable.createLootBuilder());
+        if (block instanceof ILootableBlock lootable) {
+            add(block, lootable.createLootBuilder(BlockLootables.INSTANCE));
         } else {
             add(block, drop);
         }
         addedBlocks.add(block);
-    }
-
-    public interface ILootable {
-        LootTable.Builder createLootBuilder();
     }
 }
