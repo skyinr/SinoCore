@@ -10,7 +10,9 @@ import java.util.Objects;
 
 /**
  * A create tab impl
+ * @deprecated remove and extends CreativeModeTab directly. makeIcon() method will be invoked only once in CreativeModeTab.
  */
+@Deprecated(forRemoval = true)
 public abstract class BaseCreativeTab extends CreativeModeTab {
 
     private ItemStack icon = null;
