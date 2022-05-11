@@ -1,15 +1,22 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
 import games.moegirl.sinocraft.sinocore.api.tree.Tree;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A class for wood with tree
  */
-public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock, IStrippable {
+public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock {
 
     private final Tree tree;
     private final boolean isStripped;
@@ -32,13 +39,12 @@ public class BlockTreeWood extends RotatedPillarBlock implements ITreeBlock, ISt
         return tree;
     }
 
+    @Nullable
     @Override
-    public boolean canStripped() {
-        return !isStripped;
-    }
-
-    @Override
-    public BlockState getStrippedBlock() {
-        return tree.strippedWoods().defaultBlockState();
+    public BlockState getToolModifiedState(BlockState state, Level level, BlockPos pos, Player player, ItemStack stack, ToolAction toolAction) {
+        if (!isStripped && ToolActions.AXE_STRIP.equals(toolAction)) {
+            return tree.strippedWoods().defaultBlockState();
+        }
+        return super.getToolModifiedState(state, level, pos, player, stack, toolAction);
     }
 }
