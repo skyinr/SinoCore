@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -17,18 +18,26 @@ import javax.annotation.Nullable;
  * <p>Base on {@link  BaseEntityBlock}, use model render and impl getTicker method</p>
  * <p>If entity need update, impl {@link  BlockEntityTicker} on BlockEntity.</p>
  */
-public abstract class AbstractEntityBlock extends BaseEntityBlock {
+public abstract class AbstractEntityBlock<T extends BlockEntity> extends BaseEntityBlock {
 
-    public AbstractEntityBlock(Properties properties) {
+    protected final BlockEntityType<T> entityType;
+
+    public AbstractEntityBlock(Properties properties, BlockEntityType<T> entityType) {
         super(properties);
+        this.entityType = entityType;
     }
 
-    public AbstractEntityBlock() {
-        this(BlockBehaviour.Properties.of(Material.METAL));
+    public AbstractEntityBlock(BlockEntityType<T> entityType) {
+        this(BlockBehaviour.Properties.of(Material.METAL), entityType);
     }
 
-    public AbstractEntityBlock(Material material, float strength) {
-        super(BlockBehaviour.Properties.of(material).strength(strength));
+    public AbstractEntityBlock(Material material, float strength, BlockEntityType<T> entityType) {
+        this(BlockBehaviour.Properties.of(material).strength(strength), entityType);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return entityType.create(pPos, pState);
     }
 
     @Override
