@@ -10,8 +10,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * A block with {@link  BlockEntity}.
@@ -20,24 +22,24 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractEntityBlock<T extends BlockEntity> extends BaseEntityBlock {
 
-    protected final BlockEntityType<T> entityType;
+    protected final Lazy<BlockEntityType<T>> entityType;
 
-    public AbstractEntityBlock(Properties properties, BlockEntityType<T> entityType) {
+    public AbstractEntityBlock(Properties properties, Supplier<BlockEntityType<T>> entityType) {
         super(properties);
-        this.entityType = entityType;
+        this.entityType = Lazy.of(entityType);
     }
 
-    public AbstractEntityBlock(BlockEntityType<T> entityType) {
+    public AbstractEntityBlock(Supplier<BlockEntityType<T>> entityType) {
         this(BlockBehaviour.Properties.of(Material.METAL), entityType);
     }
 
-    public AbstractEntityBlock(Material material, float strength, BlockEntityType<T> entityType) {
+    public AbstractEntityBlock(Material material, float strength, Supplier<BlockEntityType<T>> entityType) {
         this(BlockBehaviour.Properties.of(material).strength(strength), entityType);
     }
 
     @Override
     public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
-        return entityType.create(pPos, pState);
+        return entityType.get().create(pPos, pState);
     }
 
     @Override
