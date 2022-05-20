@@ -1,6 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.world;
 
-import games.moegirl.sinocraft.sinocore.api.utility.Suppliers;
+import games.moegirl.sinocraft.sinocore.api.utility.Functions;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
@@ -54,7 +54,7 @@ public class PlacedFeatureRegister {
     }
 
     public Entry<OreConfiguration, OreFeatureBuilder> registerOre(String name, Filter filter, Function<OreFeatureBuilder, OreFeatureBuilder> feature) {
-        return registerOre(name, filter, Suppliers.decorate(OreFeatureBuilder::new, feature));
+        return registerOre(name, filter, Functions.decorate(OreFeatureBuilder::new, feature));
     }
 
     public Entry<OreConfiguration, OreFeatureBuilder> registerOre(String name, Function<OreFeatureBuilder, OreFeatureBuilder> feature) {
@@ -66,7 +66,7 @@ public class PlacedFeatureRegister {
     }
 
     public Entry<TreeConfiguration, TreeFeatureBuilder> registerTree(String name, Filter filter, Function<TreeFeatureBuilder, TreeFeatureBuilder> feature) {
-        return registerTree(name, filter, Suppliers.decorate(TreeFeatureBuilder::new, feature));
+        return registerTree(name, filter, Functions.decorate(TreeFeatureBuilder::new, feature));
     }
 
     public Entry<TreeConfiguration, TreeFeatureBuilder> registerTree(String name, Function<TreeFeatureBuilder, TreeFeatureBuilder> feature) {

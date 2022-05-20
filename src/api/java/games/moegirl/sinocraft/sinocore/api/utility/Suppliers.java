@@ -6,7 +6,9 @@ import java.util.function.Supplier;
 
 /**
  * Utils for Supplier
+ * @deprecated use {@link Functions}
  */
+@Deprecated(forRemoval = true)
 public class Suppliers {
 
     /**
