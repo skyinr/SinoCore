@@ -1,5 +1,6 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
+import com.google.common.reflect.TypeToken;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -9,6 +10,7 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.material.Material;
 import net.minecraftforge.common.util.Lazy;
 
@@ -23,10 +25,13 @@ import java.util.function.Supplier;
 public abstract class AbstractEntityBlock<T extends BlockEntity> extends BaseEntityBlock {
 
     protected final Lazy<BlockEntityType<T>> entityType;
+    private final Class<?> typeClass;
 
+    @SuppressWarnings("UnstableApiUsage")
     public AbstractEntityBlock(Properties properties, Supplier<BlockEntityType<T>> entityType) {
         super(properties);
         this.entityType = Lazy.of(entityType);
+        this.typeClass = TypeToken.of(getClass()).getRawType();
     }
 
     public AbstractEntityBlock(Supplier<BlockEntityType<T>> entityType) {
@@ -51,7 +56,19 @@ public abstract class AbstractEntityBlock<T extends BlockEntity> extends BaseEnt
     @Nullable
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pBlockEntityType instanceof BlockEntityTicker t ? t : null;
+    public <T2 extends BlockEntity> BlockEntityTicker<T2> getTicker(Level pLevel, BlockState pState, BlockEntityType<T2> pBlockEntityType) {
+        return BlockEntityTicker.class.isAssignableFrom(typeClass) ? ((pLevel1, pPos, pState1, pBlockEntity) -> {
+            if (pBlockEntity instanceof BlockEntityTicker ticker) {
+                ticker.tick(pLevel1, pPos, pState1, pBlockEntity);
+            }
+        }) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T2 extends BlockEntity> GameEventListener getListener(Level pLevel, T2 pBlockEntity) {
+        return GameEventListener.class.isAssignableFrom(typeClass)
+                ? (GameEventListener) pBlockEntity
+                : this instanceof GameEventListener l ? l : null;
     }
 }
