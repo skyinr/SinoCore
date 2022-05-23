@@ -1,6 +1,7 @@
 package games.moegirl.sinocraft.sinocore.handler;
 
-import games.moegirl.sinocraft.sinocore.utility.ClassFiles;
+import games.moegirl.sinocraft.sinocore.SinoCore;
+import games.moegirl.sinocraft.sinocore.api.utility.ModFiles;
 import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -18,7 +19,8 @@ public class RegisterEventHandler {
     @SubscribeEvent
     public static void registerCapability(RegisterCapabilitiesEvent event) {
         try {
-            ClassFiles.forPackage("games.moegirl.sinocraft.sinocore.api.capability", 1)
+            ModFiles.getFiles(SinoCore.MODID)
+                    .forPackage("games.moegirl.sinocraft.sinocore.api.capability", 1)
                     .filter(Files::isRegularFile)
                     .map(f -> f.getFileName().toString())
                     .filter(fn -> fn.startsWith("I"))

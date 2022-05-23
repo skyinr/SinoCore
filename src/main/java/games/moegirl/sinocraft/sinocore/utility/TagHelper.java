@@ -11,6 +11,7 @@ import net.minecraft.world.level.material.Fluid;
 /**
  * A helper to get tag or name
  */
+@Deprecated(forRemoval = true)
 public class TagHelper {
 
     /**
@@ -42,7 +43,9 @@ public class TagHelper {
      * @param name tag name
      * @return fluid tag
      * @exception JsonSyntaxException if the tag is not existed
+     * @deprecated use {@link FluidTags#create(ResourceLocation)}
      */
+    @Deprecated(forRemoval = true)
     public static TagKey<Fluid> getFluidTag(String name) {
         return FluidTags.create(new ResourceLocation(name));
     }

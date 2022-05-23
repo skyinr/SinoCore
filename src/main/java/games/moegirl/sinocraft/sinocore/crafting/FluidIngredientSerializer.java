@@ -3,7 +3,6 @@ package games.moegirl.sinocraft.sinocore.crafting;
 import com.google.gson.JsonObject;
 import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredient;
 import games.moegirl.sinocraft.sinocore.api.crafting.IFluidIngredientSerializer;
-import games.moegirl.sinocraft.sinocore.utility.TagHelper;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -38,7 +37,8 @@ public enum FluidIngredientSerializer implements IFluidIngredientSerializer {
     public IFluidIngredient fromJson(JsonObject json) {
         int amount = GsonHelper.getAsInt(json, "amount", 1000);
         if (json.has("tag")) {
-            TagKey<Fluid> tag = TagHelper.getFluidTag(GsonHelper.getAsString(json, "tag"));
+            ResourceLocation fluidName = new ResourceLocation(GsonHelper.getAsString(json, "tag"));
+            TagKey<Fluid> tag = FluidTags.create(fluidName);
             return new FluidIngredient(tag, amount);
         } else if (json.has("fluid")) {
             String fluidName = GsonHelper.getAsString(json, "fluid");
