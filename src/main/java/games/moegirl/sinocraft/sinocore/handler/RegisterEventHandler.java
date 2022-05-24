@@ -19,7 +19,7 @@ public class RegisterEventHandler {
     @SubscribeEvent
     public static void registerCapability(RegisterCapabilitiesEvent event) {
         try {
-            ModFiles.getFiles(SinoCore.MODID)
+            ModFiles.buildFiles(SinoCore.MODID)
                     .forPackage("games.moegirl.sinocraft.sinocore.api.capability", 1)
                     .filter(Files::isRegularFile)
                     .map(f -> f.getFileName().toString())
