@@ -94,8 +94,8 @@ public class BlockLootTableBase extends BlockLoot {
                 continue;
             }
             if (block instanceof ILootableBlock block1) {
-                if (block.getLootTable().equals(new ResourceLocation(block.getRegistryName().getNamespace(), "blocks/" + block.getRegistryName().getPath()))) {
-                    SinoCoreAPI.LOGGER.atWarn().log("Do not use BlockBehaviour.Properties#lootFrom when ILootableBlock is implemented");
+                if (!block.getLootTable().equals(new ResourceLocation(block.getRegistryName().getNamespace(), "blocks/" + block.getRegistryName().getPath()))) {
+                    SinoCoreAPI.LOGGER.atWarn().log("Do not use BlockBehaviour.Properties#lootFrom when ILootableBlock is implemented - {}", block1);
                 }
                 add(block, block1.createLootBuilder(BlockLootables.INSTANCE));
                 continue;
