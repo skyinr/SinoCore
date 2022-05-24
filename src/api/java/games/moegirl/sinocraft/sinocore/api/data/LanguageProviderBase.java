@@ -236,5 +236,12 @@ public abstract class LanguageProviderBase implements DataProvider {
         protected void addTranslations() {
             LanguageProviderBase.this.addTranslationsToProvider(en);
         }
+
+        @Override
+        public void add(String key, String value) {
+            super.add(key, value);
+            Map<String, String> map = en ? enData : zhData;
+            map.put(key, value);
+        }
     }
 }
