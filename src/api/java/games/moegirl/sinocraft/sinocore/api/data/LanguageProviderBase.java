@@ -21,11 +21,12 @@ import java.util.function.Supplier;
 /**
  * Add english and chinese language
  */
-@Deprecated(forRemoval = true, since = "1.1.2")
 public abstract class LanguageProviderBase implements DataProvider {
 
     protected final Map<String, String> enData = new HashMap<>();
     protected final Map<String, String> zhData = new HashMap<>();
+    protected final Map<String, String> allEnData = new HashMap<>();
+    protected final Map<String, String> allZhData = new HashMap<>();
 
     protected final LanguageProvider en, zh;
 
@@ -240,7 +241,7 @@ public abstract class LanguageProviderBase implements DataProvider {
         @Override
         public void add(String key, String value) {
             super.add(key, value);
-            Map<String, String> map = en ? enData : zhData;
+            Map<String, String> map = en ? allEnData : allZhData;
             map.put(key, value);
         }
     }
