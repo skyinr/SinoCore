@@ -24,6 +24,10 @@ public class SimpleBlockLootTables extends BlockLoot {
     @Override
     protected void add(Block block, LootTable.Builder table) {
         super.add(block, table);
+    }
+
+    protected void addBlock(Block block, LootTable.Builder table) {
+        add(block, table);
         blocks.remove(block);
     }
 
