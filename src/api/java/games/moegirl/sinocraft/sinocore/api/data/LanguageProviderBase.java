@@ -25,8 +25,8 @@ public abstract class LanguageProviderBase implements DataProvider {
 
     protected final Map<String, String> enData = new HashMap<>();
     protected final Map<String, String> zhData = new HashMap<>();
-    protected final Map<String, String> allEnData = new HashMap<>();
-    protected final Map<String, String> allZhData = new HashMap<>();
+    protected final Map<String, String> childEnData = new HashMap<>();
+    protected final Map<String, String> childZhData = new HashMap<>();
 
     protected final LanguageProvider en, zh;
 
@@ -241,7 +241,7 @@ public abstract class LanguageProviderBase implements DataProvider {
         @Override
         public void add(String key, String value) {
             super.add(key, value);
-            Map<String, String> map = en ? allEnData : allZhData;
+            Map<String, String> map = en ? childEnData : childZhData;
             map.put(key, value);
         }
     }
