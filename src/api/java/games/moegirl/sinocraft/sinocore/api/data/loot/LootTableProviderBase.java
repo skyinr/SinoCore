@@ -22,7 +22,6 @@ import java.util.function.Supplier;
  * @author skyinr
  * @deprecated use {@link games.moegirl.sinocraft.sinocore.api.data.LootTableProviderBase}
  */
-@Deprecated(forRemoval = true)
 public abstract class LootTableProviderBase extends LootTableProvider {
     protected final String modID;
 
