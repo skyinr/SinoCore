@@ -2,6 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.data.loot;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import games.moegirl.sinocraft.sinocore.api.data.BlockLootTableProviderBase;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
@@ -20,8 +21,9 @@ import java.util.function.Supplier;
 
 /**
  * @author skyinr
- * @deprecated use {@link games.moegirl.sinocraft.sinocore.api.data.LootTableProviderBase}
+ * @deprecated use {@link BlockLootTableProviderBase}
  */
+@Deprecated
 public abstract class LootTableProviderBase extends LootTableProvider {
     protected final String modID;
 

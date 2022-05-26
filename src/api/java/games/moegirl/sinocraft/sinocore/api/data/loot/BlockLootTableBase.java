@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
  * @author skyinr
  * @deprecated use {@link SimpleBlockLootTables}
  */
+@Deprecated
 public class BlockLootTableBase extends BlockLoot {
     private final String modID;
     private final Set<Block> knownBlocks = new ObjectOpenHashSet<>();

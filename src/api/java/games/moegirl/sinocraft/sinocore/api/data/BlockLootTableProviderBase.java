@@ -13,9 +13,7 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraftforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -24,11 +22,12 @@ import java.util.stream.Collectors;
 /**
  * @author skyinr
  */
-public abstract class LootTableProviderBase extends LootTableProvider {
+public abstract class BlockLootTableProviderBase extends LootTableProvider {
     protected final String modID;
     protected final DeferredRegister<Block> register;
+    protected final Set<Block> removed = new HashSet<>();
 
-    public LootTableProviderBase(DataGenerator pGenerator, String modID, DeferredRegister<Block> register) {
+    public BlockLootTableProviderBase(DataGenerator pGenerator, String modID, DeferredRegister<Block> register) {
         super(pGenerator);
         this.modID = modID;
         this.register = register;
@@ -42,10 +41,8 @@ public abstract class LootTableProviderBase extends LootTableProvider {
 
     /**
      * Return the block loot table
-     *
-     * @return Block loot table
      */
-    public abstract void getBlockLootTable(SimpleBlockLootTables table);
+    public abstract void getBlockLootTable(List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> list);
 
     @Nonnull
     @Override
@@ -54,15 +51,48 @@ public abstract class LootTableProviderBase extends LootTableProvider {
             Set<Block> blocks = register.getEntries()
                     .stream()
                     .map(Supplier::get)
+                    .filter(b -> !removed.contains(b))
                     .collect(Collectors.toSet());
-            SimpleBlockLootTables tables = new SimpleBlockLootTables(blocks);
-            getBlockLootTable(tables);
-            return tables;
+            return new SimpleBlockLootTables(blocks);
         };
-        return List.of(Pair.of(defaultTable, LootContextParamSets.BLOCK));
+        List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> list = new ArrayList<>();
+        list.add(Pair.of(defaultTable, LootContextParamSets.BLOCK));
+        getBlockLootTable(list);
+        return list;
     }
 
     @Override
     protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationTracker) {
     }
+
+    /**
+     * Add a block to the list of blocks to skip
+     */
+    protected void skip(Block block) {
+        removed.add(block);
+    }
+
+    /**
+     * Add a block to the list of blocks to skip
+     */
+    protected void skip(Supplier<? extends Block> block) {
+        removed.add(block.get());
+    }
+
+    /**
+     * Add blocks to the list of blocks to skip
+     */
+    protected void skipAll(Collection<? extends Supplier<? extends Block>> blocks) {
+        for (Supplier<? extends Block> block : blocks) {
+            skip(block.get());
+        }
+    }
+
+    /**
+     * Add blocks to the list of blocks to skip
+     */
+    protected void skipBlocks(Collection<? extends Block> blocks) {
+        removed.addAll(blocks);
+    }
+
 }
