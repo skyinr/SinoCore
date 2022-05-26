@@ -2,6 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.data.loot;
 
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
 import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
+import games.moegirl.sinocraft.sinocore.api.data.base.SimpleBlockLootTables;
 import games.moegirl.sinocraft.sinocore.api.utility.BlockLootables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import net.minecraft.core.Registry;
@@ -21,7 +22,9 @@ import java.util.stream.Collectors;
 
 /**
  * @author skyinr
+ * @deprecated use {@link SimpleBlockLootTables}
  */
+@Deprecated(forRemoval = true)
 public class BlockLootTableBase extends BlockLoot {
     private final String modID;
     private final Set<Block> knownBlocks = new ObjectOpenHashSet<>();

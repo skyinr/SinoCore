@@ -1,34 +1,37 @@
-package games.moegirl.sinocraft.sinocore.api.data.loot;
+package games.moegirl.sinocraft.sinocore.api.data;
 
-import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
+import games.moegirl.sinocraft.sinocore.api.data.base.SimpleBlockLootTables;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraftforge.registries.DeferredRegister;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * @author skyinr
- * @deprecated use {@link games.moegirl.sinocraft.sinocore.api.data.LootTableProviderBase}
  */
-@Deprecated(forRemoval = true)
 public abstract class LootTableProviderBase extends LootTableProvider {
     protected final String modID;
+    protected final DeferredRegister<Block> register;
 
-    public LootTableProviderBase(DataGenerator pGenerator, String modID) {
+    public LootTableProviderBase(DataGenerator pGenerator, String modID, DeferredRegister<Block> register) {
         super(pGenerator);
         this.modID = modID;
+        this.register = register;
     }
 
     @Nonnull
@@ -42,21 +45,24 @@ public abstract class LootTableProviderBase extends LootTableProvider {
      *
      * @return Block loot table
      */
-    public abstract BlockLoot getBlockLootTable();
+    public abstract void getBlockLootTable(SimpleBlockLootTables table);
 
     @Nonnull
     @Override
     protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables() {
-        ImmutableList.Builder<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> builder = new ImmutableList.Builder<>();
-        BlockLoot blockLootTable = getBlockLootTable();
-        if (blockLootTable != null) {
-            builder.add(Pair.of(() -> blockLootTable, LootContextParamSets.BLOCK));
-        }
-        return builder.build();
+        Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>> defaultTable = () -> {
+            Set<Block> blocks = register.getEntries()
+                    .stream()
+                    .map(Supplier::get)
+                    .collect(Collectors.toSet());
+            SimpleBlockLootTables tables = new SimpleBlockLootTables(blocks);
+            getBlockLootTable(tables);
+            return tables;
+        };
+        return List.of(Pair.of(defaultTable, LootContextParamSets.BLOCK));
     }
 
     @Override
-    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationtracker) {
-        // skyinr: Do not validate against all registered loot tables
+    protected void validate(Map<ResourceLocation, LootTable> map, ValidationContext validationTracker) {
     }
 }
