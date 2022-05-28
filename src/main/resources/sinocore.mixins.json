@@ -4,14 +4,11 @@
   "package": "games.moegirl.sinocraft.sinocore.mixin",
   "mixins": [
     "MixinAxeItem",
-    "MixinBlockEntityType",
-    "MixinBoat",
-    "MixinBoatItem"
+    "MixinBlockLoot",
+    "MixinBlockProperties"
   ],
   "client": [
-    "MixinBoatRenderer",
-    "MixinMinecraft",
-    "MixinSheets"
+    "MixinMinecraft"
   ],
   "minVersion": "0.8"
 }

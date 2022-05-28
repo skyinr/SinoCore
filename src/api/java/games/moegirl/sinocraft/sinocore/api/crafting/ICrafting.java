@@ -2,6 +2,7 @@ package games.moegirl.sinocraft.sinocore.api.crafting;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.material.Fluid;
 
@@ -13,8 +14,6 @@ import java.util.Optional;
  * Crafting API
  */
 public interface ICrafting {
-
-    String IMPL = "games.moegirl.sinocraft.sinocore.impl.Craft";
 
     /**
      * Create a PredicateIngredient, this ingredient adds {@link ICraftPredicateSerializer.Predicate} to another
@@ -81,14 +80,14 @@ public interface ICrafting {
      * @param amount amount
      * @return fluid ingredient
      */
-    IFluidIngredient ofFluid(Tag<Fluid> fluid, int amount);
+    IFluidIngredient ofFluid(TagKey<Fluid> fluid, int amount);
 
     /**
      * Create a bucket of fluid ingredient to check fluid tag.
      * @param fluid fluid tag
      * @return fluid ingredient
      */
-    default IFluidIngredient ofFluid(Tag<Fluid> fluid) {
+    default IFluidIngredient ofFluid(TagKey<Fluid> fluid) {
         return ofFluid(fluid, 1000);
     }
 

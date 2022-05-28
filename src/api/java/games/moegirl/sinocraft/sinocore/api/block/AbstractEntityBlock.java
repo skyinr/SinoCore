@@ -1,5 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
+import com.google.common.reflect.TypeToken;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.RenderShape;
@@ -8,27 +10,41 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEventListener;
 import net.minecraft.world.level.material.Material;
+import net.minecraftforge.common.util.Lazy;
 
 import javax.annotation.Nullable;
+import java.util.function.Supplier;
 
 /**
  * A block with {@link  BlockEntity}.
  * <p>Base on {@link  BaseEntityBlock}, use model render and impl getTicker method</p>
  * <p>If entity need update, impl {@link  BlockEntityTicker} on BlockEntity.</p>
  */
-public abstract class AbstractEntityBlock extends BaseEntityBlock {
+public abstract class AbstractEntityBlock<T extends BlockEntity> extends BaseEntityBlock {
 
-    public AbstractEntityBlock(Properties properties) {
+    protected final Lazy<BlockEntityType<T>> entityType;
+    private final Class<?> typeClass;
+
+    @SuppressWarnings("UnstableApiUsage")
+    public AbstractEntityBlock(Properties properties, Supplier<BlockEntityType<T>> entityType) {
         super(properties);
+        this.entityType = Lazy.of(entityType);
+        this.typeClass = TypeToken.of(getClass()).getRawType();
     }
 
-    public AbstractEntityBlock() {
-        this(BlockBehaviour.Properties.of(Material.METAL));
+    public AbstractEntityBlock(Supplier<BlockEntityType<T>> entityType) {
+        this(BlockBehaviour.Properties.of(Material.METAL), entityType);
     }
 
-    public AbstractEntityBlock(Material material, float strength) {
-        super(BlockBehaviour.Properties.of(material).strength(strength));
+    public AbstractEntityBlock(Material material, float strength, Supplier<BlockEntityType<T>> entityType) {
+        this(BlockBehaviour.Properties.of(material).strength(strength), entityType);
+    }
+
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState) {
+        return entityType.get().create(pPos, pState);
     }
 
     @Override
@@ -40,7 +56,19 @@ public abstract class AbstractEntityBlock extends BaseEntityBlock {
     @Nullable
     @Override
     @SuppressWarnings("unchecked")
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level pLevel, BlockState pState, BlockEntityType<T> pBlockEntityType) {
-        return pBlockEntityType instanceof BlockEntityTicker t ? t : null;
+    public <T2 extends BlockEntity> BlockEntityTicker<T2> getTicker(Level pLevel, BlockState pState, BlockEntityType<T2> pBlockEntityType) {
+        return BlockEntityTicker.class.isAssignableFrom(typeClass) ? ((pLevel1, pPos, pState1, pBlockEntity) -> {
+            if (pBlockEntity instanceof BlockEntityTicker ticker) {
+                ticker.tick(pLevel1, pPos, pState1, pBlockEntity);
+            }
+        }) : null;
+    }
+
+    @Nullable
+    @Override
+    public <T2 extends BlockEntity> GameEventListener getListener(Level pLevel, T2 pBlockEntity) {
+        return GameEventListener.class.isAssignableFrom(typeClass)
+                ? (GameEventListener) pBlockEntity
+                : this instanceof GameEventListener l ? l : null;
     }
 }

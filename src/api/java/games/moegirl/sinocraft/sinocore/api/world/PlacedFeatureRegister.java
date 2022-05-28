@@ -1,6 +1,7 @@
 package games.moegirl.sinocraft.sinocore.api.world;
 
-import games.moegirl.sinocraft.sinocore.api.util.Suppliers;
+import games.moegirl.sinocraft.sinocore.api.utility.Functions;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.BiomeSpecialEffects;
@@ -53,7 +54,7 @@ public class PlacedFeatureRegister {
     }
 
     public Entry<OreConfiguration, OreFeatureBuilder> registerOre(String name, Filter filter, Function<OreFeatureBuilder, OreFeatureBuilder> feature) {
-        return registerOre(name, filter, Suppliers.decorate(OreFeatureBuilder::new, feature));
+        return registerOre(name, filter, Functions.decorate(OreFeatureBuilder::new, feature));
     }
 
     public Entry<OreConfiguration, OreFeatureBuilder> registerOre(String name, Function<OreFeatureBuilder, OreFeatureBuilder> feature) {
@@ -65,7 +66,7 @@ public class PlacedFeatureRegister {
     }
 
     public Entry<TreeConfiguration, TreeFeatureBuilder> registerTree(String name, Filter filter, Function<TreeFeatureBuilder, TreeFeatureBuilder> feature) {
-        return registerTree(name, filter, Suppliers.decorate(TreeFeatureBuilder::new, feature));
+        return registerTree(name, filter, Functions.decorate(TreeFeatureBuilder::new, feature));
     }
 
     public Entry<TreeConfiguration, TreeFeatureBuilder> registerTree(String name, Function<TreeFeatureBuilder, TreeFeatureBuilder> feature) {
@@ -81,10 +82,10 @@ public class PlacedFeatureRegister {
         BiomeSpecialEffects effects = event.getEffects();
         features.stream()
                 .filter(e -> e.test(name, category, climate, effects))
-                .forEach(e -> generation.addFeature(e.decoration.ordinal(), e));
+                .forEach(e -> generation.addFeature(e.decoration(), e.get()));
     }
 
-    public static final class Entry<C extends FeatureConfiguration, B extends BaseFeatureBuilder<C, B>> implements Supplier<PlacedFeature> {
+    public static final class Entry<C extends FeatureConfiguration, B extends BaseFeatureBuilder<C, B>> implements Supplier<Holder<PlacedFeature>> {
         private final Supplier<B> supplier;
         private final Filter filter;
         private final ResourceLocation name;
@@ -106,7 +107,7 @@ public class PlacedFeatureRegister {
         }
 
         @Override
-        public PlacedFeature get() {
+        public Holder<PlacedFeature> get() {
             return getBuilder().build(name);
         }
 

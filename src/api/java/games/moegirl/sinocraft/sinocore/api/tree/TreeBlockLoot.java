@@ -1,13 +1,13 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
-import games.moegirl.sinocraft.sinocore.api.util.BlockLootables;
 import games.moegirl.sinocraft.sinocore.api.block.ILootableBlock;
+import games.moegirl.sinocraft.sinocore.api.utility.BlockLootables;
 import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
@@ -16,48 +16,27 @@ import java.util.function.Function;
 public class TreeBlockLoot extends BlockLoot {
     private static final float[] NORMAL_LEAVES_SAPLING_CHANCES = new float[]{0.05F, 0.0625F, 0.083333336F, 0.1F};
 
-    private final TreeBlocks blocks;
-    public final Set<Block> addedBlocks = new HashSet<>();
+    private final Map<Block, Function<Block, LootTable.Builder>> loots = new HashMap<>();
 
-    public TreeBlockLoot(TreeBlocks blocks) {
-        this.blocks = blocks;
+    public TreeBlockLoot(Tree tree) {
+        loots.put(tree.sapling(), BlockLoot::createSingleItemTable);
+        loots.put(tree.log(), BlockLoot::createSingleItemTable);
+        loots.put(tree.strippedLog(), BlockLoot::createSingleItemTable);
+        loots.put(tree.strippedLog(), BlockLoot::createSingleItemTable);
+        loots.put(tree.wood(), BlockLoot::createSingleItemTable);
+        loots.put(tree.strippedWoods(), BlockLoot::createSingleItemTable);
+        loots.put(tree.leaves(), b -> BlockLoot.createLeavesDrops(b, tree.sapling(), NORMAL_LEAVES_SAPLING_CHANCES));
+        loots.put(tree.pottedSapling(), b -> BlockLoot.createPotFlowerItemTable(tree.sapling()));
     }
 
     @Override
     protected void addTables() {
-        addDrop(blocks.planks(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.sapling(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.log(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.strippedLog(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.strippedLog(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.wood(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.strippedWoods(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.leaves(), b -> BlockLoot.createLeavesDrops(b, blocks.sapling(), NORMAL_LEAVES_SAPLING_CHANCES));
-        addDrop(blocks.sign(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.wallSign(), b -> BlockLoot.createSingleItemTable(blocks.sign()));
-        addDrop(blocks.pressurePlate(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.trapdoor(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.stairs(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.pottedSapling(), b -> BlockLoot.createPotFlowerItemTable(blocks.sapling()));
-        addDrop(blocks.button(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.slab(), BlockLoot::createSlabItemTable);
-        addDrop(blocks.fenceGate(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.fence(), BlockLoot::createSingleItemTable);
-        addDrop(blocks.door(), BlockLoot::createDoorTable);
+        loots.forEach(this::addDrop);
     }
 
     @Override
     protected Iterable<Block> getKnownBlocks() {
-        return addedBlocks;
-    }
-
-    /**
-     * Return added blocks by the loot table, use for block filter
-     *
-     * @return blocks
-     */
-    public Set<Block> knownBlocks() {
-        return Set.copyOf(addedBlocks);
+        return loots.keySet();
     }
 
     private void addDrop(Block block, Function<Block, LootTable.Builder> drop) {
@@ -66,6 +45,5 @@ public class TreeBlockLoot extends BlockLoot {
         } else {
             add(block, drop);
         }
-        addedBlocks.add(block);
     }
 }

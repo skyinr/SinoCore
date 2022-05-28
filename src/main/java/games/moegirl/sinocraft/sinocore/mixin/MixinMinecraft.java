@@ -1,6 +1,7 @@
 package games.moegirl.sinocraft.sinocore.mixin;
 
 import games.moegirl.sinocraft.sinocore.api.SinoCoreAPI;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,8 +16,8 @@ public abstract class MixinMinecraft {
      */
     @Inject(method = "createTitle", at = @At("RETURN"), cancellable = true)
     private void injectCreateTitle(CallbackInfoReturnable<String> cir) {
-        if (SinoCoreAPI.DEBUG_MODE) {
-            cir.setReturnValue(cir.getReturnValue() + ": Mixin is loaded");
+        if (SharedConstants.IS_RUNNING_IN_IDE) {
+            cir.setReturnValue(cir.getReturnValue() + ": SinoSeries Dev");
         }
     }
 }

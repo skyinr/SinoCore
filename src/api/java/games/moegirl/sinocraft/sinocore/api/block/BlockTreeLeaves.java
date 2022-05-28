@@ -1,6 +1,5 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
-import games.moegirl.sinocraft.sinocore.api.tree.ITreeBlock;
 import games.moegirl.sinocraft.sinocore.api.tree.Tree;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.LeavesBlock;
@@ -19,10 +18,10 @@ public class BlockTreeLeaves extends LeavesBlock implements ITreeBlock {
     }
 
     public BlockTreeLeaves(Tree tree) {
-        this(tree, Properties.of(Material.LEAVES).strength(0.2F)
+        this(tree, Properties.of(Material.LEAVES)
                 .randomTicks()
-                .sound(tree.getProperties().sound)
-                .noOcclusion()
+                .sound(tree.properties().sound())
+                .strength(tree.properties().strengthModifier().apply(.2f), .2f)
                 .isValidSpawn((_1, _2, _3, entity) -> entity == EntityType.OCELOT || entity == EntityType.PARROT)
                 .isSuffocating((_1, _2, _3) -> false)
                 .isViewBlocking((_1, _2, _3) -> false));

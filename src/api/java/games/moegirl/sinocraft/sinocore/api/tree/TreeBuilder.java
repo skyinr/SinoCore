@@ -1,8 +1,15 @@
 package games.moegirl.sinocraft.sinocore.api.tree;
 
-import games.moegirl.sinocraft.sinocore.api.block.*;
-import games.moegirl.sinocraft.sinocore.api.world.TreeFeatureBuilder;
+import games.moegirl.sinocraft.sinocore.api.block.BlockTreeLeaves;
+import games.moegirl.sinocraft.sinocore.api.block.BlockTreeLog;
+import games.moegirl.sinocraft.sinocore.api.block.BlockTreeSapling;
+import games.moegirl.sinocraft.sinocore.api.block.BlockTreeWood;
+import games.moegirl.sinocraft.sinocore.api.utility.FloatModifier;
+import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.grower.AbstractTreeGrower;
 import net.minecraft.world.level.block.grower.OakTreeGrower;
@@ -10,6 +17,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -20,80 +28,46 @@ import java.util.function.Supplier;
 public class TreeBuilder {
 
     final ResourceLocation name;
-    public boolean hasStick = false;
+    CreativeModeTab tab = CreativeModeTab.TAB_DECORATIONS;
     SoundType sound = SoundType.GRASS;
     MaterialColor topLogColor = MaterialColor.WOOD;
     MaterialColor barkLogColor = MaterialColor.WOOD;
     MaterialColor topStrippedLogColor = MaterialColor.WOOD;
     MaterialColor barkStrippedLogColor = MaterialColor.WOOD;
-    MaterialColor plankColor = MaterialColor.WOOD;
     MaterialColor woodColor = MaterialColor.WOOD;
     MaterialColor strippedWoodColor = MaterialColor.WOOD;
     AbstractTreeGrower grower = new OakTreeGrower();
+    FloatModifier strengthModifier = new FloatModifier();
 
-    Function<Tree, Block> planks = BlockTreePlanks::new;
     Function<Tree, SaplingBlock> sapling = BlockTreeSapling::new;
+    Function<Tree, BlockItem> saplingItem = tree -> new BlockItem(tree.sapling(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, RotatedPillarBlock> log = tree -> new BlockTreeLog(tree, false);
+    Function<Tree, BlockItem> logItem = tree -> new BlockItem(tree.log(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, RotatedPillarBlock> strippedLog = tree -> new BlockTreeLog(tree, true);
+    Function<Tree, BlockItem> strippedLogItem = tree -> new BlockItem(tree.strippedLog(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, RotatedPillarBlock> wood = tree -> new BlockTreeWood(tree, false);
+    Function<Tree, BlockItem> woodItem = tree -> new BlockItem(tree.wood(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, RotatedPillarBlock> strippedWoods = tree -> new BlockTreeWood(tree, true);
+    Function<Tree, BlockItem> strippedWoodsItem = tree -> new BlockItem(tree.strippedWoods(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, LeavesBlock> leaves = BlockTreeLeaves::new;
-    Function<Tree, StandingSignBlock> sign = tree ->
-            new StandingSignBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.getBlocks().log().defaultMaterialColor())
-                    .noCollission()
-                    .strength(1.0F)
-                    .sound(SoundType.WOOD), tree.type);
-    Function<Tree, WallSignBlock> wallSign = tree ->
-            new WallSignBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.blocks.log().defaultMaterialColor())
-                    .noCollission()
-                    .strength(1.0F)
-                    .sound(SoundType.WOOD)
-                    .lootFrom(tree.blocks.sign), tree.type);
-    Function<Tree, PressurePlateBlock> pressurePlate = tree -> {
-        assert tree.blocks != null;
-        return new PressurePlateBlock(
-                PressurePlateBlock.Sensitivity.EVERYTHING,
-                BlockBehaviour.Properties.of(Material.WOOD, tree.blocks.planks().defaultMaterialColor())
-                        .noCollission()
-                        .strength(0.5F)
-                        .sound(SoundType.WOOD));
-    };
-    Function<Tree, TrapDoorBlock> trapdoor = tree ->
-            new TrapDoorBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.properties.woodColor)
-                    .strength(3.0F)
-                    .sound(SoundType.WOOD)
-                    .noOcclusion()
-                    .isValidSpawn((_1, _2, _3, _4) -> false));
-    Function<Tree, StairBlock> stairs = tree -> new StairBlock(() -> tree.blocks.planks().defaultBlockState(),
-            BlockBehaviour.Properties.copy(tree.blocks.planks()));
+    Function<Tree, BlockItem> leavesItem = tree -> new BlockItem(tree.leaves(), new Item.Properties().tab(tree.properties().tab()));
+
     Function<Tree, FlowerPotBlock> pottedSapling = tree -> new FlowerPotBlock(
-            () -> (FlowerPotBlock) Blocks.FLOWER_POT.delegate.get(), tree.blocks.sapling,
-            BlockBehaviour.Properties.of(Material.DECORATION)
-                    .instabreak()
-                    .noOcclusion());
-    Function<Tree, ButtonBlock> button = tree -> new WoodButtonBlock(BlockBehaviour.Properties.of(Material.DECORATION)
-            .noCollission()
-            .strength(0.5F)
-            .sound(SoundType.WOOD));
-    Function<Tree, SlabBlock> slab = tree -> new SlabBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.properties.woodColor)
-            .strength(2.0F, 3.0F)
-            .sound(SoundType.WOOD));
-    Function<Tree, FenceGateBlock> fenceGate = tree ->
-            new FenceGateBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.blocks.planks().defaultMaterialColor())
-                    .strength(2.0F, 3.0F)
-                    .sound(SoundType.WOOD));
-    Function<Tree, FenceBlock> fence = tree ->
-            new FenceBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.blocks.planks().defaultMaterialColor())
-                    .strength(2.0F, 3.0F)
-                    .sound(SoundType.WOOD));
-    Function<Tree, DoorBlock> door = tree ->
-            new DoorBlock(BlockBehaviour.Properties.of(Material.WOOD, tree.blocks.planks().defaultMaterialColor())
-                    .strength(3.0F)
-                    .sound(SoundType.WOOD)
-                    .noOcclusion());
+            () -> (FlowerPotBlock) Blocks.FLOWER_POT.delegate.get(), tree.sapling,
+            BlockBehaviour.Properties.of(Material.DECORATION).instabreak().noOcclusion());
 
     public TreeBuilder(ResourceLocation name) {
         this.name = name;
+    }
+
+    public TreeBuilder tab(CreativeModeTab tab) {
+        this.tab = tab;
+        return this;
     }
 
     /**
@@ -131,17 +105,6 @@ public class TreeBuilder {
     public TreeBuilder strippedLogColor(MaterialColor top, MaterialColor bark) {
         this.topStrippedLogColor = top;
         this.barkStrippedLogColor = bark;
-        return this;
-    }
-
-    /**
-     * Plank: set plank color in map
-     *
-     * @param color plank color, default is {@link MaterialColor#WOOD}
-     * @return this builder
-     */
-    public TreeBuilder plankColor(MaterialColor color) {
-        this.plankColor = color;
         return this;
     }
 
@@ -187,14 +150,12 @@ public class TreeBuilder {
      * @param woodColor     wood color
      * @param barkColor     bark log color
      * @param strippedColor stripped log color
-     * @param plankColor    plank color
      * @return this builder
      */
-    public TreeBuilder color(MaterialColor topColor, MaterialColor woodColor, MaterialColor barkColor, MaterialColor strippedColor, MaterialColor plankColor) {
+    public TreeBuilder color(MaterialColor topColor, MaterialColor woodColor, MaterialColor barkColor, MaterialColor strippedColor) {
         logColor(topColor, barkColor);
         strippedLogColor(topColor, strippedColor);
         woodColor(woodColor, strippedColor);
-        plankColor(plankColor);
         return this;
     }
 
@@ -207,7 +168,7 @@ public class TreeBuilder {
      * @return this builder
      */
     public TreeBuilder color(MaterialColor woodColor, MaterialColor barkColor, MaterialColor strippedColor) {
-        return color(woodColor, woodColor, barkColor, strippedColor, woodColor);
+        return color(woodColor, woodColor, barkColor, strippedColor);
     }
 
     /**
@@ -229,14 +190,14 @@ public class TreeBuilder {
      */
     public TreeBuilder grower(Function<Random, ConfiguredFeature<?, ?>> feature) {
         this.grower = new AbstractTreeGrower() {
-            private ConfiguredFeature<?, ?> configuredFeature = null;
+            private Holder<ConfiguredFeature<?, ?>> configuredFeature = null;
             private boolean initialized = false;
 
             @Nullable
             @Override
-            protected ConfiguredFeature<?, ?> getConfiguredFeature(Random pRandom, boolean pLargeHive) {
+            protected Holder<ConfiguredFeature<?, ?>> getConfiguredFeature(Random pRandom, boolean pLargeHive) {
                 if (!initialized) {
-                    configuredFeature = feature.apply(pRandom);
+                    configuredFeature = Holder.direct(feature.apply(pRandom));
                     initialized = true;
                 }
                 return configuredFeature;
@@ -258,26 +219,6 @@ public class TreeBuilder {
     /**
      * Sapling: set tree grower, use to grow the tree
      *
-     * @param feature feature builder
-     * @return this builder
-     */
-    public TreeBuilder growerBuilder(TreeFeatureBuilder feature) {
-        return growerBuilder(r -> feature);
-    }
-
-    /**
-     * Sapling: set tree grower, use to grow the tree
-     *
-     * @param feature feature builder selector
-     * @return this builder
-     */
-    public TreeBuilder growerBuilder(Function<Random, TreeFeatureBuilder> feature) {
-        return grower(r -> feature.apply(r).configured(this.name.getNamespace(), this.name.getPath()));
-    }
-
-    /**
-     * Sapling: set tree grower, use to grow the tree
-     *
      * @param feature feature
      * @return this builder
      */
@@ -285,21 +226,13 @@ public class TreeBuilder {
         return grower(r -> feature);
     }
 
-    /**
-     * Has special stick item
-     */
-    public TreeBuilder hasStick() {
-        hasStick = true;
-        return this;
-    }
-
-    public TreeBuilder customPlanks(Function<Tree, Block> factory) {
-        this.planks = factory;
-        return this;
-    }
-
     public TreeBuilder customSapling(Function<Tree, SaplingBlock> factory) {
         this.sapling = factory;
+        return this;
+    }
+
+    public TreeBuilder customSaplingItem(Function<Tree, BlockItem> factory) {
+        this.saplingItem = factory;
         return this;
     }
 
@@ -308,8 +241,18 @@ public class TreeBuilder {
         return this;
     }
 
+    public TreeBuilder customLogItem(Function<Tree, BlockItem> factory) {
+        this.logItem = factory;
+        return this;
+    }
+
     public TreeBuilder customStrippedLog(Function<Tree, RotatedPillarBlock> factory) {
         this.strippedLog = factory;
+        return this;
+    }
+
+    public TreeBuilder customStrippedLogItem(Function<Tree, BlockItem> factory) {
+        this.strippedLogItem = factory;
         return this;
     }
 
@@ -318,8 +261,18 @@ public class TreeBuilder {
         return this;
     }
 
+    public TreeBuilder customWoodItem(Function<Tree, BlockItem> factory) {
+        this.woodItem = factory;
+        return this;
+    }
+
     public TreeBuilder customStrippedWood(Function<Tree, RotatedPillarBlock> factory) {
         this.strippedWoods = factory;
+        return this;
+    }
+
+    public TreeBuilder customStrippedWoodItem(Function<Tree, BlockItem> factory) {
+        this.strippedWoodsItem = factory;
         return this;
     }
 
@@ -328,28 +281,8 @@ public class TreeBuilder {
         return this;
     }
 
-    public TreeBuilder customSign(Function<Tree, StandingSignBlock> factory) {
-        this.sign = factory;
-        return this;
-    }
-
-    public TreeBuilder customWallSign(Function<Tree, WallSignBlock> factory) {
-        this.wallSign = factory;
-        return this;
-    }
-
-    public TreeBuilder customPressurePlate(Function<Tree, PressurePlateBlock> factory) {
-        this.pressurePlate = factory;
-        return this;
-    }
-
-    public TreeBuilder customTrapDoor(Function<Tree, TrapDoorBlock> factory) {
-        this.trapdoor = factory;
-        return this;
-    }
-
-    public TreeBuilder customStairs(Function<Tree, StairBlock> factory) {
-        this.stairs = factory;
+    public TreeBuilder customLeavesItem(Function<Tree, BlockItem> factory) {
+        this.leavesItem = factory;
         return this;
     }
 
@@ -358,32 +291,12 @@ public class TreeBuilder {
         return this;
     }
 
-    public TreeBuilder customButton(Function<Tree, ButtonBlock> factory) {
-        this.button = factory;
+    public TreeBuilder blockStrengthModifier(FloatModifier modifier) {
+        strengthModifier = modifier;
         return this;
     }
 
-    public TreeBuilder customSlab(Function<Tree, SlabBlock> factory) {
-        this.slab = factory;
-        return this;
-    }
-
-    public TreeBuilder customFenceGate(Function<Tree, FenceGateBlock> factory) {
-        this.fenceGate = factory;
-        return this;
-    }
-
-    public TreeBuilder customFence(Function<Tree, FenceBlock> factory) {
-        this.fence = factory;
-        return this;
-    }
-
-    public TreeBuilder customDoor(Function<Tree, DoorBlock> factory) {
-        this.door = factory;
-        return this;
-    }
-
-    public Tree build() {
-        return new Tree(this);
+    public Tree build(DeferredRegister<Block> blocks, DeferredRegister<Item> items) {
+        return new Tree(this, blocks, items);
     }
 }

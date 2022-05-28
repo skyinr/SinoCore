@@ -1,19 +1,24 @@
 package games.moegirl.sinocraft.sinocore.api.block;
 
-import games.moegirl.sinocraft.sinocore.api.tree.ITreeBlock;
 import games.moegirl.sinocraft.sinocore.api.tree.Tree;
-import games.moegirl.sinocraft.sinocore.api.tree.TreeProperties;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
+import net.minecraftforge.common.ToolAction;
+import net.minecraftforge.common.ToolActions;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A class for log and stripped log with tree
  */
-public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock, IStrippable {
+public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock {
 
     private final Tree tree;
     private final boolean isStripped;
@@ -26,8 +31,17 @@ public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock, IStr
 
     public BlockTreeLog(Tree tree, boolean isStripped) {
         this(tree, isStripped, Properties.of(Material.WOOD, state -> color(tree, state, isStripped))
-                .strength(2.0F)
+                .strength(tree.properties().strengthModifier().apply(2), 2.0f)
                 .sound(SoundType.WOOD));
+    }
+
+    private static MaterialColor color(Tree tree, BlockState state, boolean isStripped) {
+        Tree.BuilderProperties prop = tree.properties();
+        if (isStripped) {
+            return state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? prop.topStrippedLogColor() : prop.barkStrippedLogColor();
+        } else {
+            return state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? prop.topLogColor() : prop.barkLogColor();
+        }
     }
 
     @Override
@@ -35,22 +49,12 @@ public class BlockTreeLog extends RotatedPillarBlock implements ITreeBlock, IStr
         return tree;
     }
 
-    private static MaterialColor color(Tree tree, BlockState state, boolean isStripped) {
-        TreeProperties prop = tree.getProperties();
-        if (isStripped) {
-            return state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? prop.topStrippedLogColor : prop.barkStrippedLogColor;
-        } else {
-            return state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? prop.topLogColor : prop.barkLogColor;
+    @Nullable
+    @Override
+    public BlockState getToolModifiedState(BlockState state, Level level, BlockPos pos, Player player, ItemStack stack, ToolAction toolAction) {
+        if (!isStripped && ToolActions.AXE_STRIP.equals(toolAction)) {
+            return tree.strippedLog().defaultBlockState();
         }
-    }
-
-    @Override
-    public boolean canStripped() {
-        return !isStripped;
-    }
-
-    @Override
-    public BlockState getStrippedBlock() {
-        return tree.getBlocks().strippedLog.get().defaultBlockState();
+        return super.getToolModifiedState(state, level, pos, player, stack, toolAction);
     }
 }

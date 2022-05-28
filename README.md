@@ -21,6 +21,7 @@ Step 2. Add the dependency
 
 ```groovy
 dependencies {
-    implementation 'com.github.SinoCraftProject:SinoCore:1.0.0'
+    implementation fg.deobf('com.github.SinoCraftProject:SinoCore:main-SNAPSHOT')
 }
 ```
+
