@@ -4,6 +4,7 @@
   "package": "games.moegirl.sinocraft.sinocore.mixin",
   "mixins": [
     "MixinAxeItem",
+    "MixinBlockLoot",
     "MixinBlockProperties"
   ],
   "client": [

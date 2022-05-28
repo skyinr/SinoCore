@@ -6,48 +6,38 @@ import net.minecraft.data.loot.BlockLoot;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.LootTable;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Function;
 
 /**
  * A loot table for tree blocks
  */
 public class WoodworkBlockLoot extends BlockLoot {
-    private final Woodwork woodwork;
-    private final Set<Block> addedBlocks = new HashSet<>();
+    private final Map<Block, Function<Block, LootTable.Builder>> loots = new HashMap<>();
 
     public WoodworkBlockLoot(Woodwork woodwork) {
-        this.woodwork = woodwork;
+        loots.put(woodwork.planks(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.sign(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.wallSign(), b -> BlockLoot.createSingleItemTable(woodwork.sign()));
+        loots.put(woodwork.pressurePlate(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.trapdoor(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.stairs(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.button(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.slab(), BlockLoot::createSlabItemTable);
+        loots.put(woodwork.fenceGate(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.fence(), BlockLoot::createSingleItemTable);
+        loots.put(woodwork.door(), BlockLoot::createDoorTable);
     }
 
     @Override
     protected void addTables() {
-        addDrop(woodwork.planks(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.sign(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.wallSign(), b -> BlockLoot.createSingleItemTable(woodwork.sign()));
-        addDrop(woodwork.pressurePlate(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.trapdoor(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.stairs(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.button(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.slab(), BlockLoot::createSlabItemTable);
-        addDrop(woodwork.fenceGate(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.fence(), BlockLoot::createSingleItemTable);
-        addDrop(woodwork.door(), BlockLoot::createDoorTable);
+        loots.forEach(this::addDrop);
     }
 
     @Override
-    protected Iterable<Block> getKnownBlocks() {
-        return addedBlocks;
-    }
-
-    /**
-     * Return added blocks by the loot table, use for block filter
-     *
-     * @return blocks
-     */
-    public Set<Block> knownBlocks() {
-        return Set.copyOf(addedBlocks);
+    public Iterable<Block> getKnownBlocks() {
+        return loots.keySet();
     }
 
     private void addDrop(Block block, Function<Block, LootTable.Builder> drop) {
@@ -56,6 +46,5 @@ public class WoodworkBlockLoot extends BlockLoot {
         } else {
             add(block, drop);
         }
-        addedBlocks.add(block);
     }
 }
